@@ -298,35 +298,141 @@
         </div>
     </section>
 
-    <!-- Guía Paso a Paso -->
+    <!-- Guía Paso a Paso (Acordeón Interactivo) -->
     <section id="guia" class="py-24 px-6 bg-black/10">
-        <div class="max-w-5xl mx-auto">
-            <div class="text-center mb-16 reveal">
-                <h2 class="font-syne text-4xl font-bold mb-4">Guía de Aplicación</h2>
-                <p class="text-white/60">5 pasos para auditar tu camino actual.</p>
+        <div class="max-w-4xl mx-auto">
+            
+            <!-- Título de Sección tipo Editorial -->
+            <div class="grid md:grid-cols-2 gap-10 items-end mb-16 reveal">
+                <div>
+                    <h2 class="font-syne text-5xl md:text-6xl font-bold mb-2 tracking-tight">Cinco pasos.</h2>
+                    <h2 class="font-syne text-5xl md:text-6xl font-bold text-[#C8F56A] italic mb-2">Una hoja de papel.</h2>
+                    <h2 class="font-syne text-5xl md:text-6xl font-bold tracking-tight">Todo lo que cambia.</h2>
+                </div>
+                <p class="text-white/60 leading-relaxed md:pb-3">
+                    Este ejercicio funciona mejor offline. Apartá 30 minutos sin notificaciones, agarrá una hoja en blanco y trabajá con honestidad brutal. Volvé después al analizador digital de esta página para validar.
+                </p>
             </div>
 
+            <!-- Acordeón de Pasos -->
             <div class="space-y-4">
-                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
-                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">01</span>
-                    <p class="text-white/70 text-sm"><strong class="text-white">Explora:</strong> Anota 5 actividades a las que te dedicarías sin limitaciones financieras.</p>
+                
+                <!-- Step 01 -->
+                <div class="glass-panel rounded-2xl cursor-pointer group transition-all duration-300 reveal hover:border-[#C8F56A]/30" onclick="toggleAccordion(this)">
+                    <div class="p-6 md:px-8 flex justify-between items-center">
+                        <div class="flex gap-6 items-center">
+                            <span class="font-syne text-3xl font-bold text-[#C8F56A] italic">01</span>
+                            <h5 class="font-bold text-lg md:text-xl text-white">Explorar — Lista de cinco</h5>
+                        </div>
+                        <i data-lucide="plus" class="text-white/50 transition-transform duration-300 icon-plus w-6 h-6"></i>
+                    </div>
+                    <div class="px-6 pb-8 md:px-8 hidden accordion-content animate-fade-in">
+                        <p class="text-white/70 text-sm mb-4">Anotá cinco actividades a las que te dedicarías sin restricciones financieras.</p>
+                        <p class="text-white/70 text-sm mb-6">La regla es radical: <strong class="text-white">si tuvieras la cuenta bancaria resuelta para siempre, ¿qué seguirías haciendo igual?</strong> No pienses en mercado, ni en vergüenza, ni en lo que dirá tu familia. Cinco actividades, sin filtro.</p>
+                        
+                        <div class="p-5 bg-[#0A1628]/60 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase tracking-widest text-[#C8F56A] font-bold mb-3 block">EJEMPLO</span>
+                            <ul class="text-sm text-white/60 space-y-2">
+                                <li>1. Escribir cuentos cortos de ciencia ficción</li>
+                                <li>2. Cocinar para grupos grandes los domingos</li>
+                                <li>3. Enseñar matemática a chicos con dificultades</li>
+                                <li>4. Restaurar muebles antiguos</li>
+                                <li>5. Crear música electrónica ambiental</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
-                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">02</span>
-                    <p class="text-white/70 text-sm"><strong class="text-white">Audita:</strong> Analiza cada idea bajo la lupa de la Pasión, el Dinero/Don y la Habilidad.</p>
+
+                <!-- Step 02 -->
+                <div class="glass-panel rounded-2xl cursor-pointer group transition-all duration-300 reveal hover:border-[#C8F56A]/30" onclick="toggleAccordion(this)">
+                    <div class="p-6 md:px-8 flex justify-between items-center">
+                        <div class="flex gap-6 items-center">
+                            <span class="font-syne text-3xl font-bold text-[#C8F56A] italic">02</span>
+                            <h5 class="font-bold text-lg md:text-xl text-white">Auditar — Tres notas por idea</h5>
+                        </div>
+                        <i data-lucide="plus" class="text-white/50 transition-transform duration-300 icon-plus w-6 h-6"></i>
+                    </div>
+                    <div class="px-6 pb-8 md:px-8 hidden accordion-content animate-fade-in">
+                        <p class="text-white/70 text-sm mb-4">Calificá cada idea del 1 al 10 en Pasión, Dones y Habilidad.</p>
+                        <p class="text-white/70 text-sm mb-6">Sé completamente honesto. Evalúa qué tanto te apasiona (P), qué tan bueno eres de forma natural o potencial (D) y cuánta destreza técnica tienes actualmente (H). No puntúes lo que te gustaría ser, sino <strong class="text-white">dónde estás parado hoy.</strong></p>
+                        
+                        <div class="p-5 bg-[#0A1628]/60 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase tracking-widest text-[#C8F56A] font-bold mb-3 block">EJEMPLO: "Enseñar matemática"</span>
+                            <ul class="text-sm text-white/60 space-y-3">
+                                <li><strong class="text-[#C5B8E8]">Pasión: 9/10</strong> - Me encanta explicar y ver cuando alguien por fin entiende.</li>
+                                <li><strong class="text-[#4DCFCF]">Dones: 8/10</strong> - Tengo mucha paciencia y claridad natural al hablar.</li>
+                                <li><strong class="text-[#F0A884]">Habilidad: 4/10</strong> - Sé de números, pero me falta habilidad usando plataformas online.</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
-                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">03</span>
-                    <p class="text-white/70 text-sm"><strong class="text-white">Filtra:</strong> Identifica dónde los tres pilares son fuertes hoy o a corto plazo.</p>
+
+                <!-- Step 03 -->
+                <div class="glass-panel rounded-2xl cursor-pointer group transition-all duration-300 reveal hover:border-[#C8F56A]/30" onclick="toggleAccordion(this)">
+                    <div class="p-6 md:px-8 flex justify-between items-center">
+                        <div class="flex gap-6 items-center">
+                            <span class="font-syne text-3xl font-bold text-[#C8F56A] italic">03</span>
+                            <h5 class="font-bold text-lg md:text-xl text-white">Filtrar — Búsqueda del equilibrio</h5>
+                        </div>
+                        <i data-lucide="plus" class="text-white/50 transition-transform duration-300 icon-plus w-6 h-6"></i>
+                    </div>
+                    <div class="px-6 pb-8 md:px-8 hidden accordion-content animate-fade-in">
+                        <p class="text-white/70 text-sm mb-4">Identificá dónde los tres pilares son fuertes hoy o mejorables a corto plazo.</p>
+                        <p class="text-white/70 text-sm mb-6">Descarta sin miedo. Si una idea tiene un 2/10 en Habilidad y no estás dispuesto a estudiar años para mejorarla, táchala. Quédate con las 1 o 2 ideas donde el triángulo esté más balanceado y sea realista impulsarlo.</p>
+                        
+                        <div class="p-5 bg-[#0A1628]/60 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase tracking-widest text-[#C8F56A] font-bold mb-3 block">EJEMPLO DE FILTRADO</span>
+                            <ul class="text-sm text-white/60 space-y-3">
+                                <li>❌ <strong class="text-white">Restaurar muebles:</strong> Pasión (8), Dones (3), Habilidad (1). Queda descartada. Me costaría años ser un buen artesano.</li>
+                                <li>✅ <strong class="text-white">Enseñar matemática:</strong> Pasión (9), Dones (8), Habilidad (4). Es una idea fuerte, solo falta compensar la habilidad técnica.</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
-                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">04</span>
-                    <p class="text-white/70 text-sm"><strong class="text-white">Acciona:</strong> Crea un plan para fortalecer la punta más débil de tu triángulo elegido.</p>
+
+                <!-- Step 04 -->
+                <div class="glass-panel rounded-2xl cursor-pointer group transition-all duration-300 reveal hover:border-[#C8F56A]/30" onclick="toggleAccordion(this)">
+                    <div class="p-6 md:px-8 flex justify-between items-center">
+                        <div class="flex gap-6 items-center">
+                            <span class="font-syne text-3xl font-bold text-[#C8F56A] italic">04</span>
+                            <h5 class="font-bold text-lg md:text-xl text-white">Accionar — Plan de compensación</h5>
+                        </div>
+                        <i data-lucide="plus" class="text-white/50 transition-transform duration-300 icon-plus w-6 h-6"></i>
+                    </div>
+                    <div class="px-6 pb-8 md:px-8 hidden accordion-content animate-fade-in">
+                        <p class="text-white/70 text-sm mb-4">Creá un plan para fortalecer la punta más débil de tu triángulo elegido.</p>
+                        <p class="text-white/70 text-sm mb-6">Rara vez encontrarás el equilibrio perfecto desde el día 1. Identifica el punto más bajo (P, D o H) de tu idea ganadora y diseña una <strong class="text-white">acción concreta y con fecha límite</strong> para subirle el puntaje de inmediato.</p>
+                        
+                        <div class="p-5 bg-[#0A1628]/60 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase tracking-widest text-[#C8F56A] font-bold mb-3 block">EJEMPLO DE PLAN</span>
+                            <p class="text-sm text-white/60 mb-2"><strong>Punto débil:</strong> Habilidad técnica (4/10 en enseñanza virtual).</p>
+                            <p class="text-sm text-white/60"><strong>Acción de 30 días:</strong> Tomar un curso intensivo sobre pizarras digitales, Zoom y OBS Studio, y realizar 3 simulacros de clases gratuitas con conocidos antes del 15 de este mes.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
-                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">05</span>
-                    <p class="text-white/70 text-sm"><strong class="text-white">Itera:</strong> Prueba por 3 meses. El equilibrio es un proceso dinámico, no estático.</p>
+
+                <!-- Step 05 -->
+                <div class="glass-panel rounded-2xl cursor-pointer group transition-all duration-300 reveal hover:border-[#C8F56A]/30" onclick="toggleAccordion(this)">
+                    <div class="p-6 md:px-8 flex justify-between items-center">
+                        <div class="flex gap-6 items-center">
+                            <span class="font-syne text-3xl font-bold text-[#C8F56A] italic">05</span>
+                            <h5 class="font-bold text-lg md:text-xl text-white">Iterar — La prueba del tiempo</h5>
+                        </div>
+                        <i data-lucide="plus" class="text-white/50 transition-transform duration-300 icon-plus w-6 h-6"></i>
+                    </div>
+                    <div class="px-6 pb-8 md:px-8 hidden accordion-content animate-fade-in">
+                        <p class="text-white/70 text-sm mb-4">Probá por 3 meses. El equilibrio es un proceso dinámico, no estático.</p>
+                        <p class="text-white/70 text-sm mb-6">El triángulo no se cierra en tu imaginación, sino en la realidad. Sal al mundo, ofrece tus servicios y evalúa. Si descubres que a los 3 meses se derrumba el pilar de la "Pasión", ajusta la oferta o vuelve al paso uno sin culpa.</p>
+                        
+                        <div class="p-5 bg-[#0A1628]/60 rounded-xl border border-white/5">
+                            <span class="text-[10px] uppercase tracking-widest text-[#C8F56A] font-bold mb-3 block">EJEMPLO DE ITERACIÓN</span>
+                            <p class="text-sm text-white/60">
+                                "Después de 2 meses dando clases online, me di cuenta de que mi pasión sigue intacta, pero el estrés técnico bajó mi entusiasmo. Mi nueva iteración es contratar a alguien para configurar mis clases o cambiar a clases presenciales".
+                            </p>
+                        </div>
+                    </div>
                 </div>
+
             </div>
         </div>
     </section>
@@ -397,6 +503,29 @@
                 <p class="text-white/80 text-xl leading-relaxed">${data.text}</p>
             `;
             document.getElementById('detail-card').style.borderColor = data.color + '44';
+        }
+
+        // Lógica del Acordeón Interactivo
+        function toggleAccordion(element) {
+            const content = element.querySelector('.accordion-content');
+            const icon = element.querySelector('.icon-plus');
+            const isHidden = content.classList.contains('hidden');
+
+            // Cierra todos los demás
+            document.querySelectorAll('.accordion-content').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.icon-plus').forEach(el => el.classList.remove('rotate-45'));
+            document.querySelectorAll('#guia .glass-panel').forEach(el => {
+                el.classList.remove('bg-white/[0.05]');
+                el.classList.remove('border-[#C8F56A]/30');
+            });
+
+            // Abre el clickeado si estaba cerrado
+            if (isHidden) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-45');
+                element.classList.add('bg-white/[0.05]');
+                element.classList.add('border-[#C8F56A]/30');
+            }
         }
 
         const observer = new IntersectionObserver((entries) => {
