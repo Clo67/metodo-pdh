@@ -3,49 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Método PDH - Encuentra tu Punto de Equilibrio</title>
+    <title>Método PDH | Tu Punto de Equilibrio</title>
     
-    <!-- Motores de Renderizado -->
+    <!-- Fuentes y Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    
-    <!-- Librería de Iconos Lucide para React -->
-    <script src="https://unpkg.com/lucide-react@0.372.0/dist/umd/lucide-react.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        /* Importación de Fuentes Originales */
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
-
         :root {
-            --font-syne: 'Syne', sans-serif;
-            --font-dmsans: 'DM Sans', sans-serif;
             --color-navy: #0A1628;
-            --color-navy-light: #162034;
             --color-lime: #C8F56A;
             --color-cyan: #4DCFCF;
             --color-lavender: #C5B8E8;
             --color-peach: #F0A884;
         }
 
-        html { scroll-behavior: smooth; }
         body {
-            font-family: var(--font-dmsans);
+            font-family: 'DM Sans', sans-serif;
             background-color: var(--color-navy);
             color: white;
             overflow-x: hidden;
-            margin: 0;
+            scroll-behavior: smooth;
         }
 
-        .font-syne { font-family: var(--font-syne); }
+        .font-syne { font-family: 'Syne', sans-serif; }
 
-        /* Estilo Mesh Background Original */
         .mesh-bg {
             background-color: var(--color-navy);
             background-image: 
-                radial-gradient(circle at 15% 20%, rgba(77, 207, 207, 0.12) 0%, transparent 35%),
-                radial-gradient(circle at 85% 40%, rgba(197, 184, 232, 0.12) 0%, transparent 35%),
+                radial-gradient(circle at 15% 20%, rgba(77, 207, 207, 0.1) 0%, transparent 35%),
+                radial-gradient(circle at 85% 40%, rgba(197, 184, 232, 0.1) 0%, transparent 35%),
                 radial-gradient(circle at 50% 90%, rgba(200, 245, 106, 0.08) 0%, transparent 40%);
             background-attachment: fixed;
         }
@@ -55,193 +44,369 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
         }
 
-        .glass-panel-hover:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
-            transition: all 0.5s ease;
-        }
-
-        .reveal-target {
+        .reveal {
             opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateY(30px);
+            transition: all 0.8s ease-out;
         }
 
-        .reveal-target.active {
+        .reveal.active {
             opacity: 1;
             transform: translateY(0);
         }
 
         @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
         }
 
         .animate-float { animation: float 6s ease-in-out infinite; }
         
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+        .btn-primary {
+            background-color: var(--color-lime);
+            color: #050b14;
+            font-weight: 700;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 20px rgba(200, 245, 106, 0.15);
         }
-        .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            background-color: #d7ff85;
+            box-shadow: 0 8px 30px rgba(200, 245, 106, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: white;
+            font-weight: 500;
+            padding: 1rem 2rem;
+            border-radius: 9999px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Estilos del Triángulo Visual */
+        .triangle-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .triangle-point {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .triangle-point:hover {
+            filter: drop-shadow(0 0 10px currentColor);
+            transform: scale(1.1);
+        }
+
+        .center-point {
+            fill: var(--color-lime);
+            filter: drop-shadow(0 0 15px var(--color-lime));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.8; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.1); }
+        }
     </style>
 </head>
-<body>
-    <div id="root"></div>
+<body class="mesh-bg">
 
-    <script type="text/babel">
-        const { useEffect, useState, useRef } = React;
-        const { 
-            Heart, Sparkles, Target, Layers, ArrowRight, CheckCircle2, 
-            Zap, Compass, TrendingUp, RefreshCcw, Star, Loader2 
-        } = LucideReact;
-
-        // --- COMPONENTES UI ---
-        const Badge = ({ children, colorClass = "text-[#C8F56A] bg-[#C8F56A]/10 border-[#C8F56A]/20" }) => (
-            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${colorClass} transition-all`}>
-                {children}
-            </span>
-        );
-
-        const SectionHeading = ({ title, subtitle, align = "center" }) => (
-            <div className={`mb-16 ${align === "center" ? "text-center" : "text-left"} reveal-target`}>
-                <h2 className="font-syne text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">{title}</h2>
-                {subtitle && <p className="text-xl text-white/70 max-w-2xl mx-auto font-light leading-relaxed">{subtitle}</p>}
+    <!-- Navegación -->
+    <nav class="fixed top-0 w-full z-50 glass-panel border-b border-white/5 px-6 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="font-syne font-bold text-2xl tracking-tighter flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-[#C8F56A] to-[#4DCFCF] flex items-center justify-center text-[#0A1628]">
+                    <i data-lucide="trending-up" class="w-4 h-4"></i>
+                </div>
+                PDH.
             </div>
-        );
+            <div class="hidden md:flex gap-8 text-sm font-medium text-white/70">
+                <a href="#metodo" class="hover:text-white transition-colors">El Método</a>
+                <a href="#visual" class="hover:text-white transition-colors">Gráfico</a>
+                <a href="#guia" class="hover:text-white transition-colors">Guía</a>
+                <a href="#analizador" class="hover:text-white transition-colors">Analizador</a>
+            </div>
+            <button class="px-6 py-2 rounded-full border border-white/20 text-sm font-bold hover:bg-white hover:text-[#0A1628] transition-all">
+                Acceso
+            </button>
+        </div>
+    </nav>
 
-        // --- SECCIONES ---
-        const HeroSection = () => (
-            <section className="relative min-h-screen flex items-center justify-center pt-20 pb-12 overflow-hidden px-6">
-                <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#4DCFCF]/10 rounded-full blur-[100px] animate-float"></div>
-                <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[#C5B8E8]/10 rounded-full blur-[100px] animate-float" style={{animationDelay:'2s'}}></div>
-                <div className="relative z-10 max-w-5xl mx-auto text-center reveal-target">
-                    <Badge>Experiencia de Transformación</Badge>
-                    <h1 className="font-syne text-6xl md:text-8xl font-bold text-white mt-8 mb-8 leading-[1.1] tracking-tight">
-                        Encuentra tu <br className="hidden md:block"/>
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C8F56A] to-[#4DCFCF]">Punto de Equilibrio</span>
-                    </h1>
-                    <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto mb-12 font-light leading-relaxed">
-                        El Método PDH no es una idea abstracta; es el lugar exacto donde convergen tu identidad profunda, tu talento innato y tu capacidad de acción.
-                    </p>
-                    <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                        <button onClick={() => document.getElementById('analizador').scrollIntoView({behavior:'smooth'})} 
-                                className="px-8 py-4 rounded-[24px] bg-[#C8F56A] text-[#0A1628] font-bold text-lg hover:scale-105 transition-all shadow-[0_0_40px_rgba(200,245,106,0.3)] flex items-center gap-3 w-full sm:w-auto justify-center">
-                            Descubrir mi propósito <ArrowRight size={20} />
-                        </button>
+    <!-- Hero -->
+    <section class="min-h-screen flex items-center justify-center pt-20 px-6 relative">
+        <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-[#4DCFCF]/10 rounded-full blur-[100px] animate-float"></div>
+        <div class="relative z-10 max-w-5xl mx-auto text-center reveal">
+            <span class="inline-block px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-bold border border-[#C8F56A]/30 text-[#C8F56A] bg-[#C8F56A]/10 mb-8">
+                MÉTODO HOLÍSTICO DE TRANSFORMACIÓN
+            </span>
+            <h1 class="font-syne text-5xl md:text-8xl font-bold mb-8 leading-[1.1]">
+                Tu Punto de <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#C8F56A] to-[#4DCFCF]">Equilibrio</span>
+            </h1>
+            <p class="text-xl text-white/70 max-w-2xl mx-auto mb-12 font-light">
+                Alinea tu Pasión, tus Dones y tus Habilidades para construir una vida con propósito y resultados tangibles.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-5 justify-center">
+                <a href="#analizador" class="btn-primary text-lg">
+                    Comenzar Análisis <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                </a>
+                <a href="#visual" class="btn-secondary text-lg">
+                    Ver el Triángulo
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visualización del Triángulo -->
+    <section id="visual" class="py-24 px-6 max-w-7xl mx-auto text-center border-b border-white/5">
+        <div class="reveal mb-12">
+            <h2 class="font-syne text-4xl font-bold mb-4">El Esquema del Éxito</h2>
+            <p class="text-white/60">Haz clic en los vértices para descubrir cada pilar.</p>
+        </div>
+        
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <div class="triangle-container reveal">
+                <svg viewBox="0 0 400 360" class="w-full h-auto drop-shadow-2xl">
+                    <!-- Líneas del Triángulo -->
+                    <path d="M200 40 L360 300 L40 300 Z" fill="none" stroke="white" stroke-width="2" stroke-opacity="0.1" />
+                    
+                    <!-- Centro (El Propósito) -->
+                    <circle cx="200" cy="210" r="12" class="center-point" />
+                    <text x="200" y="245" text-anchor="middle" class="triangle-text fill-white/80 font-bold text-[12px] font-syne">EQUILIBRIO</text>
+
+                    <!-- Punto P (Pasión) -->
+                    <g class="triangle-point text-[#C5B8E8]" onclick="showDetail('p')">
+                        <circle cx="200" cy="40" r="25" fill="currentColor" fill-opacity="0.2" />
+                        <text x="200" y="47" text-anchor="middle" class="fill-current font-bold text-2xl font-syne">P</text>
+                        <text x="200" y="15" text-anchor="middle" class="fill-white/60 text-[10px] tracking-widest">PASIÓN</text>
+                    </g>
+
+                    <!-- Punto D (Dones) -->
+                    <g class="triangle-point text-[#4DCFCF]" onclick="showDetail('d')">
+                        <circle cx="40" cy="300" r="25" fill="currentColor" fill-opacity="0.2" />
+                        <text x="40" y="307" text-anchor="middle" class="fill-current font-bold text-2xl font-syne">D</text>
+                        <text x="40" y="340" text-anchor="middle" class="fill-white/60 text-[10px] tracking-widest">DONES</text>
+                    </g>
+
+                    <!-- Punto H (Habilidades) -->
+                    <g class="triangle-point text-[#F0A884]" onclick="showDetail('h')">
+                        <circle cx="360" cy="300" r="25" fill="currentColor" fill-opacity="0.2" />
+                        <text x="360" y="307" text-anchor="middle" class="fill-current font-bold text-2xl font-syne">H</text>
+                        <text x="360" y="340" text-anchor="middle" class="fill-white/60 text-[10px] tracking-widest">HABILIDAD</text>
+                    </g>
+                </svg>
+            </div>
+
+            <div class="text-left space-y-8 reveal">
+                <div id="detail-card" class="glass-panel p-10 rounded-[40px] border-[#C8F56A]/20 min-h-[300px] flex flex-col justify-center">
+                    <div id="detail-content">
+                        <h3 class="font-syne text-3xl font-bold mb-4 text-[#C8F56A]">Selecciona un pilar</h3>
+                        <p class="text-white/60 text-lg leading-relaxed">
+                            Interactúa con el gráfico de la izquierda para entender la importancia de cada vértice en tu desarrollo personal y profesional.
+                        </p>
                     </div>
                 </div>
-            </section>
-        );
+            </div>
+        </div>
+    </section>
 
-        const TriangleSection = () => {
-            const pillars = [
-                { id: "P", title: "Pasión", sub: "Los Sueños", desc: "El motor emocional y la dirección hacia la cual tiende la voluntad. Se alimenta de tus sueños e intereses profundos.", icon: <Heart size={32} className="text-[#C5B8E8]" />, color: "border-[#C5B8E8]/30" },
-                { id: "D", title: "Dones", sub: "El Desarrollo Personal", desc: "La esencia y potencial innato. Tus virtudes propias (intuición, creatividad) y crecimiento interno.", icon: <Star size={32} className="text-[#4DCFCF]" />, color: "border-[#4DCFCF]/30" },
-                { id: "H", title: "Habilidades", sub: "Expertise y Experiencia", desc: "El componente práctico y técnico. La herramienta pulida que permite entregar resultados tangibles.", icon: <Layers size={32} className="text-[#F0A884]" />, color: "border-[#F0A884]/30" }
-            ];
-            return (
-                <section id="metodo" className="py-24 px-6 relative max-w-7xl mx-auto">
-                    <SectionHeading title="El Triángulo del Propósito" subtitle="Tres ejes fundamentales que deben alinearse para encontrar el éxito y la plenitud." />
-                    <div className="grid md:grid-cols-3 gap-8 mt-16">
-                        {pillars.map((p, i) => (
-                            <div key={p.id} className="glass-panel glass-panel-hover rounded-[32px] p-8 reveal-target flex flex-col items-start" style={{transitionDelay: `${(i+1)*100}ms`}}>
-                                <div className={`w-16 h-16 rounded-[20px] flex items-center justify-center glass-panel border mb-8 ${p.color}`}>{p.icon}</div>
-                                <h3 className="font-syne text-5xl font-bold text-white/20 mb-2">{p.id}</h3>
-                                <h4 className="text-2xl font-bold text-white mb-1">{p.title}</h4>
-                                <span className="text-sm uppercase tracking-wider text-white/50 mb-6 block">{p.sub}</span>
-                                <p className="text-white/70 leading-relaxed text-sm md:text-base">{p.desc}</p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            );
-        };
-
-        const SynergySection = () => {
-            const combinations = [
-                { title: "Pasión + Dones", result: "Idealismo sin Impacto", desc: "Genera autenticidad y gozo, pero sin las habilidades técnicas, se queda en intenciones.", missing: "Falta: Habilidad" },
-                { title: "Dones + Habilidades", result: "Eficiencia Vacía", desc: "Produce éxito profesional, pero sin pasión, conduce al agotamiento existencial.", missing: "Falta: Pasión" },
-                { title: "Pasión + Habilidades", result: "Desgaste Constante", desc: "Alto desempeño pero forzando tu naturaleza al no usar tus dones innatos.", missing: "Falta: Dones" }
-            ];
-            return (
-                <section className="py-24 px-6 max-w-7xl mx-auto">
-                    <SectionHeading title="La Interacción y el Desequilibrio" align="left" />
-                    <div className="grid md:grid-cols-3 gap-6">
-                        {combinations.map((c, i) => (
-                            <div key={i} className="glass-panel rounded-[24px] p-8 reveal-target" style={{transitionDelay: `${(i+1)*100}ms`}}>
-                                <div className="flex items-center gap-3 mb-4"><Compass size={20} className="text-[#4DCFCF]" /><span className="font-syne font-semibold text-white/80">{c.title}</span></div>
-                                <h4 className="text-2xl font-bold text-[#F0A884] mb-4">{c.result}</h4>
-                                <p className="text-white/70 text-sm mb-8">{c.desc}</p>
-                                <div className="inline-flex px-4 py-2 rounded-full glass-panel text-white/50 text-sm">{c.missing}</div>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            );
-        };
-
-        const InteractiveToolSection = () => {
-            const [inputs, setInputs] = useState({ p: '', d: '', h: '' });
-            const [result, setResult] = useState(null);
-            const [loading, setLoading] = useState(false);
-            const isComplete = inputs.p && inputs.d && inputs.h;
-
-            const analyze = () => {
-                setLoading(true);
-                setTimeout(() => {
-                    setLoading(false);
-                    setResult(`Tu propósito óptimo se halla al fusionar tu pasión por "${inputs.p}" con tus dones en "${inputs.d}". Usando tus habilidades en "${inputs.h}", crearás un impacto real.`);
-                }, 1800);
-            };
-
-            return (
-                <section id="analizador" className="py-24 px-6 bg-[#0A1628]/80">
-                    <div className="max-w-4xl mx-auto glass-panel rounded-[32px] p-8 md:p-12 reveal-target">
-                        <SectionHeading title="Analiza tu Propósito" />
-                        <div className="space-y-6">
-                            <div><label className="text-white/80 block mb-2 font-syne">Pasión</label><textarea onChange={e=>setInputs({...inputs, p:e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#C8F56A]/50 outline-none h-24 transition-all" /></div>
-                            <div><label className="text-white/80 block mb-2 font-syne">Dones</label><textarea onChange={e=>setInputs({...inputs, d:e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#C8F56A]/50 outline-none h-24 transition-all" /></div>
-                            <div><label className="text-white/80 block mb-2 font-syne">Habilidades</label><textarea onChange={e=>setInputs({...inputs, h:e.target.value})} className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#C8F56A]/50 outline-none h-24 transition-all" /></div>
-                            <button onClick={analyze} disabled={!isComplete || loading} className={`w-full py-5 rounded-2xl font-bold text-lg transition-all ${isComplete ? 'bg-[#C8F56A] text-navy hover:scale-[1.02] text-[#0A1628]' : 'bg-white/10 text-white/30'}`}>
-                                {loading ? 'Analizando...' : 'Revelar mi Propósito'}
-                            </button>
-                            {result && <div className="mt-8 p-8 rounded-2xl border border-[#C8F56A]/30 bg-[#C8F56A]/10 animate-fade-in text-lg italic">{result}</div>}
-                        </div>
-                    </div>
-                </section>
-            );
-        };
-
-        function App() {
-            useEffect(() => {
-                const observer = new IntersectionObserver(entries => {
-                    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
-                }, { threshold: 0.1 });
-                document.querySelectorAll('.reveal-target').forEach(el => observer.observe(el));
-            }, []);
-
-            return (
-                <div className="mesh-bg min-h-screen">
-                    <nav className="fixed top-0 w-full z-50 glass-panel px-6 py-4 border-x-0 border-t-0">
-                        <div className="max-w-7xl mx-auto flex justify-between items-center font-syne font-bold text-2xl text-[#C8F56A]">PDH.</div>
-                    </nav>
-                    <HeroSection />
-                    <TriangleSection />
-                    <SynergySection />
-                    <InteractiveToolSection />
-                    <footer className="py-20 text-center text-white/40 text-sm">© 2026 Método PDH Interactivos</footer>
+    <!-- El Método (Listado) -->
+    <section id="metodo" class="py-24 px-6 max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- P -->
+            <div class="glass-panel p-8 rounded-[32px] reveal group hover:bg-white/[0.05] transition-all">
+                <div class="w-14 h-14 rounded-2xl bg-[#C5B8E8]/20 flex items-center justify-center mb-6 border border-[#C5B8E8]/30">
+                    <i data-lucide="heart" class="text-[#C5B8E8]"></i>
                 </div>
-            );
+                <h4 class="text-xl font-bold mb-1">Pasión: Los Sueños</h4>
+                <p class="text-white/60 text-sm">Tu motor emocional. Lo que harías sin recompensa externa.</p>
+            </div>
+            <!-- D -->
+            <div class="glass-panel p-8 rounded-[32px] reveal group hover:bg-white/[0.05] transition-all" style="transition-delay: 100ms;">
+                <div class="w-14 h-14 rounded-2xl bg-[#4DCFCF]/20 flex items-center justify-center mb-6 border border-[#4DCFCF]/30">
+                    <i data-lucide="sparkles" class="text-[#4DCFCF]"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-1">Dones: Esencia</h4>
+                <p class="text-white/60 text-sm">Tus virtudes naturales: intuición, creatividad, escucha.</p>
+            </div>
+            <!-- H -->
+            <div class="glass-panel p-8 rounded-[32px] reveal group hover:bg-white/[0.05] transition-all" style="transition-delay: 200ms;">
+                <div class="w-14 h-14 rounded-2xl bg-[#F0A884]/20 flex items-center justify-center mb-6 border border-[#F0A884]/30">
+                    <i data-lucide="layers" class="text-[#F0A884]"></i>
+                </div>
+                <h4 class="text-xl font-bold mb-1">Habilidades: Técnica</h4>
+                <p class="text-white/60 text-sm">Maestría técnica adquirida por el tiempo y la experiencia.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sinergias y Desequilibrios -->
+    <section id="sinergias" class="py-24 px-6 max-w-7xl mx-auto border-t border-white/5">
+        <div class="text-center mb-16 reveal">
+            <h2 class="font-syne text-4xl font-bold mb-4">Los Desequilibrios</h2>
+            <p class="text-white/60">¿Qué sucede cuando falta uno de los pilares?</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-panel p-8 rounded-3xl reveal border-l-4 border-l-[#C5B8E8]">
+                <h4 class="font-bold text-[#C5B8E8] mb-2 uppercase text-xs tracking-widest">Pasión + Dones</h4>
+                <p class="text-sm text-white/70 italic">"Idealismo sin impacto: Mucho entusiasmo y talento, pero sin la técnica para materializarlo."</p>
+            </div>
+            <div class="glass-panel p-8 rounded-3xl reveal border-l-4 border-l-[#4DCFCF]" style="transition-delay: 100ms;">
+                <h4 class="font-bold text-[#4DCFCF] mb-2 uppercase text-xs tracking-widest">Dones + Habilidades</h4>
+                <p class="text-sm text-white/70 italic">"Eficiencia vacía: Eres muy bueno y ganas dinero, pero sientes un vacío existencial."</p>
+            </div>
+            <div class="glass-panel p-8 rounded-3xl reveal border-l-4 border-l-[#F0A884]" style="transition-delay: 200ms;">
+                <h4 class="font-bold text-[#F0A884] mb-2 uppercase text-xs tracking-widest">Pasión + Habilidades</h4>
+                <p class="text-sm text-white/70 italic">"Desgaste constante: Te gusta y sabes hacerlo, pero fuerzas tu naturaleza innata."</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Guía Paso a Paso -->
+    <section id="guia" class="py-24 px-6 bg-black/10">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-16 reveal">
+                <h2 class="font-syne text-4xl font-bold mb-4">Guía de Aplicación</h2>
+                <p class="text-white/60">5 pasos para auditar tu camino actual.</p>
+            </div>
+
+            <div class="space-y-4">
+                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
+                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">01</span>
+                    <p class="text-white/70 text-sm"><strong class="text-white">Explora:</strong> Anota 5 actividades a las que te dedicarías sin limitaciones financieras.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
+                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">02</span>
+                    <p class="text-white/70 text-sm"><strong class="text-white">Audita:</strong> Analiza cada idea bajo la lupa de la Pasión, el Dinero/Don y la Habilidad.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
+                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">03</span>
+                    <p class="text-white/70 text-sm"><strong class="text-white">Filtra:</strong> Identifica dónde los tres pilares son fuertes hoy o a corto plazo.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
+                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">04</span>
+                    <p class="text-white/70 text-sm"><strong class="text-white">Acciona:</strong> Crea un plan para fortalecer la punta más débil de tu triángulo elegido.</p>
+                </div>
+                <div class="glass-panel p-6 rounded-2xl flex gap-6 items-start reveal">
+                    <span class="font-syne text-2xl font-bold text-[#C8F56A]">05</span>
+                    <p class="text-white/70 text-sm"><strong class="text-white">Itera:</strong> Prueba por 3 meses. El equilibrio es un proceso dinámico, no estático.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Analizador -->
+    <section id="analizador" class="py-24 px-6 relative">
+        <div class="max-w-4xl mx-auto glass-panel p-8 md:p-12 rounded-[40px] reveal border-[#C8F56A]/20">
+            <h2 class="font-syne text-3xl font-bold mb-8 text-center">Analizador de Propósito</h2>
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-bold mb-3 text-[#C5B8E8]/80 uppercase tracking-widest">¿Qué te apasiona?</label>
+                    <textarea id="p-input" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#C5B8E8] outline-none h-24" placeholder="Ej: Arte, tecnología, ayudar a otros..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-3 text-[#4DCFCF]/80 uppercase tracking-widest">¿Cuáles son tus dones?</label>
+                    <textarea id="d-input" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#4DCFCF] outline-none h-24" placeholder="Ej: Creatividad, análisis, empatía..."></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-bold mb-3 text-[#F0A884]/80 uppercase tracking-widest">¿Qué sabes hacer bien?</label>
+                    <textarea id="h-input" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#F0A884] outline-none h-24" placeholder="Ej: Programar, vender, diseñar..."></textarea>
+                </div>
+                <button onclick="analyze()" class="btn-primary w-full justify-center py-5 mt-4">
+                    <i data-lucide="wand-2" class="w-5 h-5"></i> Revelar mi Equilibrio
+                </button>
+            </div>
+
+            <div id="result-box" class="hidden mt-8 p-8 border border-[#C8F56A]/30 rounded-3xl bg-[#C8F56A]/5">
+                <h4 class="font-syne font-bold text-[#C8F56A] mb-3 flex items-center gap-2 text-xl italic">
+                    <i data-lucide="target" class="w-6 h-6"></i> Tu Zona de Impacto
+                </h4>
+                <p id="result-text" class="text-white/80 italic leading-relaxed text-lg"></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-20 text-center border-t border-white/5">
+        <div class="font-syne font-bold text-xl mb-4 text-white/20 uppercase tracking-tighter">Metodo PDH</div>
+        <p class="opacity-40 text-[10px]">© 2026 Herramienta de Alineación Estratégica.</p>
+    </footer>
+
+    <script>
+        lucide.createIcons();
+
+        const details = {
+            p: {
+                title: "Pasión",
+                color: "#C5B8E8",
+                text: "Es tu brújula emocional. Representa tus sueños, deseos y lo que harías incluso si no te pagaran por ello. Sin pasión, el trabajo se vuelve una carga pesada y el éxito carece de sabor."
+            },
+            d: {
+                title: "Dones",
+                color: "#4DCFCF",
+                text: "Tus facultades innatas refinadas. Es tu esencia y cómo te desarrollas personalmente. Es el 'quién eres' en tu estado más puro: tu creatividad, tu intuición o tu capacidad de escucha."
+            },
+            h: {
+                title: "Habilidad",
+                color: "#F0A884",
+                text: "Tu expertise técnico. La maestría que has ganado con el tiempo, el estudio y la práctica. Es lo que te permite materializar el valor en el mundo real y ser recompensado por ello."
+            }
+        };
+
+        function showDetail(type) {
+            const content = document.getElementById('detail-content');
+            const data = details[type];
+            content.innerHTML = `
+                <h3 class="font-syne text-4xl font-bold mb-4" style="color: ${data.color}">${data.title}</h3>
+                <p class="text-white/80 text-xl leading-relaxed">${data.text}</p>
+            `;
+            document.getElementById('detail-card').style.borderColor = data.color + '44';
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('active');
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+        function analyze() {
+            const p = document.getElementById('p-input').value.trim();
+            const d = document.getElementById('d-input').value.trim();
+            const h = document.getElementById('h-input').value.trim();
+            if(!p || !d || !h) return;
+            const resultBox = document.getElementById('result-box');
+            resultBox.classList.remove('hidden');
+            document.getElementById('result-text').innerText = "Analizando alineación...";
+            setTimeout(() => {
+                document.getElementById('result-text').innerText = `Tu verdadero propósito emerge al unir tu pasión por "${p}" con tu esencia de "${d}". Utiliza tu maestría en "${h}" como el motor para escalar este propósito. Has encontrado el centro del triángulo.`;
+                window.scrollTo({ top: resultBox.offsetTop + 300, behavior: 'smooth' });
+            }, 800);
+        }
     </script>
 </body>
 </html>
