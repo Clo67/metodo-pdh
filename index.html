@@ -3,205 +3,1784 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Método PDH - Encuentra tu Punto de Equilibrio</title>
-    
-    <!-- Tailwind para el diseño y Lucide para iconos -->
+    <title>Método PDH — El Triángulo del Propósito</title>
+    <meta name="description" content="Método holístico para descubrir tu propósito de vida alineando Pasión, Dones y Habilidades. Una herramienta práctica de introspección estratégica.">
+
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Fonts: Fraunces (display serif), Manrope (body), JetBrains Mono (code/labels) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT@0,9..144,300..900,30..100;1,9..144,300..900,30..100&family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide icons (UMD bundle exposes window.lucide) -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.min.js"></script>
 
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
-
         :root {
-            --color-navy: #0A1628;
-            --color-lime: #C8F56A;
+            --ink: #0A1628;
+            --ink-deep: #050B14;
+            --paper: #F5F1E8;
+            --lime: #C8F56A;
+            --lime-glow: #DFFF85;
+            --cyan: #4DCFCF;
+            --lavender: #C5B8E8;
+            --peach: #F0A884;
+            --rust: #D4684A;
+            --gold: #E8C547;
         }
+
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
         html { scroll-behavior: smooth; }
         body {
-            font-family: 'DM Sans', sans-serif;
-            background-color: var(--color-navy);
-            color: white;
-            margin: 0;
+            font-family: 'Manrope', system-ui, sans-serif;
+            background-color: var(--ink);
+            color: #E9EEF6;
             overflow-x: hidden;
+            font-feature-settings: "ss01", "ss02";
         }
 
-        .font-syne { font-family: 'Syne', sans-serif; }
+        .font-display { font-family: 'Fraunces', serif; font-feature-settings: "ss01"; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
 
-        /* El diseño Mesh Gradient original */
-        .mesh-bg {
-            background-color: var(--color-navy);
-            background-image: 
-                radial-gradient(circle at 15% 20%, rgba(77, 207, 207, 0.12) 0%, transparent 35%),
-                radial-gradient(circle at 85% 40%, rgba(197, 184, 232, 0.12) 0%, transparent 35%),
-                radial-gradient(circle at 50% 90%, rgba(200, 245, 106, 0.08) 0%, transparent 40%);
-            background-attachment: fixed;
+        /* Atmospheric background */
+        .atmosphere {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+            background-color: var(--ink);
+            background-image:
+                radial-gradient(circle at 18% 22%, rgba(77, 207, 207, 0.15) 0%, transparent 38%),
+                radial-gradient(circle at 84% 38%, rgba(197, 184, 232, 0.13) 0%, transparent 38%),
+                radial-gradient(circle at 50% 92%, rgba(200, 245, 106, 0.1) 0%, transparent 42%),
+                radial-gradient(circle at 12% 78%, rgba(240, 168, 132, 0.08) 0%, transparent 36%);
         }
 
-        .glass-panel {
+        /* Subtle grain overlay */
+        .atmosphere::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.5'/></svg>");
+            opacity: 0.06;
+            mix-blend-mode: overlay;
+        }
+
+        .glass {
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px) saturate(140%);
+            -webkit-backdrop-filter: blur(20px) saturate(140%);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
 
-        .glass-panel-hover:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-4px);
-            transition: all 0.4s ease;
+        .glass-strong {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(28px) saturate(160%);
+            -webkit-backdrop-filter: blur(28px) saturate(160%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Animaciones de entrada */
-        .reveal { opacity: 0; transform: translateY(30px); transition: all 0.8s ease-out; }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        /* Reveal animation */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s cubic-bezier(.22,.7,.2,1), transform .9s cubic-bezier(.22,.7,.2,1); }
+        .reveal.in { opacity: 1; transform: translateY(0); }
+        .stagger > * { opacity: 0; transform: translateY(18px); transition: opacity .8s ease-out, transform .8s ease-out; }
+        .stagger.in > *:nth-child(1) { transition-delay: 0ms; opacity:1; transform:translateY(0); }
+        .stagger.in > *:nth-child(2) { transition-delay: 80ms; opacity:1; transform:translateY(0); }
+        .stagger.in > *:nth-child(3) { transition-delay: 160ms; opacity:1; transform:translateY(0); }
+        .stagger.in > *:nth-child(4) { transition-delay: 240ms; opacity:1; transform:translateY(0); }
+        .stagger.in > *:nth-child(5) { transition-delay: 320ms; opacity:1; transform:translateY(0); }
+
+        /* Float animation */
+        @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+        .float { animation: float 7s ease-in-out infinite; }
+
+        @keyframes spin-slow { from { transform: rotate(0); } to { transform: rotate(360deg); } }
+        .spin-slow { animation: spin-slow 60s linear infinite; }
+
+        @keyframes pulse-soft { 0%,100% { opacity: .8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.08); } }
+        .pulse-soft { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+        /* Marquee */
+        @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        .marquee-track { animation: marquee 40s linear infinite; }
+
+        /* Buttons */
+        .btn-primary {
+            background: var(--lime);
+            color: var(--ink-deep);
+            font-weight: 700;
+            padding: 1rem 1.75rem;
+            border-radius: 999px;
+            transition: all .35s cubic-bezier(.4,0,.2,1);
+            display: inline-flex; align-items: center; gap: .55rem;
+            box-shadow: 0 6px 28px -8px rgba(200,245,106,.55), inset 0 1px 0 rgba(255,255,255,.4);
+            letter-spacing: -.01em;
+        }
+        .btn-primary:hover { transform: translateY(-2px); background: var(--lime-glow); box-shadow: 0 12px 38px -8px rgba(200,245,106,.7), inset 0 1px 0 rgba(255,255,255,.5); }
+
+        .btn-ghost {
+            background: rgba(255,255,255,.04);
+            color: white;
+            padding: 1rem 1.75rem;
+            border-radius: 999px;
+            border: 1px solid rgba(255,255,255,.14);
+            transition: all .3s ease;
+            display: inline-flex; align-items: center; gap: .55rem;
+            font-weight: 500;
+        }
+        .btn-ghost:hover { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.3); transform: translateY(-1px); }
+
+        /* Underline link */
+        .ulink { position: relative; }
+        .ulink::after {
+            content: ""; position: absolute; left: 0; bottom: -2px; height: 1px; width: 100%;
+            background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform .4s ease;
+        }
+        .ulink:hover::after { transform: scaleX(1); transform-origin: left; }
+
+        /* Pill */
+        .pill {
+            display: inline-flex; align-items: center; gap: .5rem;
+            padding: .4rem .85rem; border-radius: 999px;
+            font-family: 'JetBrains Mono', monospace; font-size: 11px;
+            text-transform: uppercase; letter-spacing: .12em;
+            border: 1px solid rgba(255,255,255,.15);
+            background: rgba(255,255,255,.03);
+        }
+
+        /* SVG triangle interactive */
+        .vertex { cursor: pointer; transition: transform .35s cubic-bezier(.34,1.56,.64,1), filter .35s ease; transform-origin: center; transform-box: fill-box; }
+        .vertex:hover { transform: scale(1.18); filter: drop-shadow(0 0 16px currentColor); }
+        .vertex.active { filter: drop-shadow(0 0 22px currentColor); }
+
+        /* Hero triangle ambient */
+        .hero-tri { filter: drop-shadow(0 30px 80px rgba(77,207,207,0.18)); }
+
+        /* Gradient text helpers */
+        .grad-lime { background: linear-gradient(120deg, var(--lime) 0%, var(--cyan) 60%, var(--lavender) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .grad-warm { background: linear-gradient(110deg, var(--peach) 0%, var(--gold) 60%, var(--lime) 100%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+
+        /* Case card */
+        .case {
+            position: relative; overflow: hidden;
+            transition: transform .4s ease, border-color .4s ease;
+        }
+        .case:hover { transform: translateY(-4px); border-color: rgba(255,255,255,.16); }
+        .case::before {
+            content:""; position: absolute; inset: 0;
+            background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(255,255,255,.05), transparent 40%);
+            opacity: 0; transition: opacity .4s ease; pointer-events: none;
+        }
+        .case:hover::before { opacity: 1; }
+
+        /* Step counter */
+        .step-num {
+            font-family: 'Fraunces', serif;
+            font-variation-settings: "opsz" 144, "SOFT" 100;
+            font-weight: 300;
+            font-style: italic;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--ink-deep); }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.2); }
+
+        /* Slider styling */
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: transparent;
+            width: 100%;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            height: 4px; border-radius: 999px;
+            background: rgba(255,255,255,.08);
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 22px; height: 22px;
+            border-radius: 50%;
+            background: var(--lime);
+            border: 3px solid var(--ink);
+            margin-top: -9px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(200,245,106,.4);
+            transition: transform .2s ease;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+        input[type="range"]::-moz-range-track { height: 4px; border-radius: 999px; background: rgba(255,255,255,.08); }
+        input[type="range"]::-moz-range-thumb {
+            width: 22px; height: 22px; border-radius: 50%;
+            background: var(--lime); border: 3px solid var(--ink); cursor: pointer;
+        }
+        .slider-p::-webkit-slider-thumb { background: var(--lavender); box-shadow: 0 4px 14px rgba(197,184,232,.5); }
+        .slider-p::-moz-range-thumb { background: var(--lavender); }
+        .slider-d::-webkit-slider-thumb { background: var(--cyan); box-shadow: 0 4px 14px rgba(77,207,207,.5); }
+        .slider-d::-moz-range-thumb { background: var(--cyan); }
+        .slider-h::-webkit-slider-thumb { background: var(--peach); box-shadow: 0 4px 14px rgba(240,168,132,.5); }
+        .slider-h::-moz-range-thumb { background: var(--peach); }
+
+        /* Decorative ticker frame */
+        .ticker-frame {
+            border-top: 1px solid rgba(255,255,255,.08);
+            border-bottom: 1px solid rgba(255,255,255,.08);
+            background: linear-gradient(180deg, rgba(255,255,255,.02), rgba(255,255,255,.0));
+        }
+
+        /* Persona blob */
+        .blob {
+            border-radius: 50% 30% 60% 40% / 40% 50% 50% 60%;
+            animation: blob-morph 12s ease-in-out infinite;
+        }
+        @keyframes blob-morph {
+            0%,100% { border-radius: 50% 30% 60% 40% / 40% 50% 50% 60%; }
+            33% { border-radius: 30% 60% 40% 70% / 60% 40% 60% 40%; }
+            66% { border-radius: 60% 40% 70% 30% / 50% 60% 40% 50%; }
+        }
+
+        /* Editorial drop cap */
+        .dropcap::first-letter {
+            font-family: 'Fraunces', serif;
+            font-weight: 600;
+            float: left;
+            font-size: 4.6rem;
+            line-height: .85;
+            margin: .25rem .6rem -.2rem 0;
+            color: var(--lime);
+            font-style: italic;
+        }
+
+        /* Section dividers */
+        .divider {
+            display: flex; align-items: center; gap: 1rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px; letter-spacing: .2em; text-transform: uppercase;
+            color: rgba(255,255,255,.4);
+        }
+        .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: rgba(255,255,255,.1); }
+
+        /* Hover glow for examples */
+        .ex-card { transition: all .4s cubic-bezier(.4,0,.2,1); }
+        .ex-card:hover { transform: translateY(-6px) scale(1.01); }
+
+        /* Cursor dot */
+        #cursor-dot {
+            position: fixed; width: 8px; height: 8px;
+            background: var(--lime); border-radius: 50%;
+            pointer-events: none; z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform .15s ease, opacity .25s ease, width .25s ease, height .25s ease;
+            mix-blend-mode: difference;
+            opacity: 0;
+        }
+        #cursor-ring {
+            position: fixed; width: 36px; height: 36px;
+            border: 1px solid rgba(200,245,106,.5);
+            border-radius: 50%;
+            pointer-events: none; z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: transform .35s cubic-bezier(.4,0,.2,1), opacity .3s ease, width .3s ease, height .3s ease;
+            opacity: 0;
+        }
+        @media (hover: hover) and (pointer: fine) {
+            body:hover #cursor-dot, body:hover #cursor-ring { opacity: 1; }
+        }
+
+        /* Hide system cursor on interactive layer? No, keep accessibility */
+
+        /* Accordion */
+        details summary { list-style: none; cursor: pointer; }
+        details summary::-webkit-details-marker { display: none; }
+        details[open] .acc-icon { transform: rotate(45deg); }
+        .acc-icon { transition: transform .35s ease; }
+
+        /* Background grid for hero */
+        .grid-bg {
+            background-image:
+                linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+            background-size: 64px 64px;
+            mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);
+        }
+
+        /* Result triangle viewport */
+        #user-tri-svg .v-pulse { animation: pulse-soft 2.4s ease-in-out infinite; }
+
+        /* Responsive font sizing helper */
+        .display-1 { font-size: clamp(2.8rem, 9vw, 7.5rem); line-height: .96; letter-spacing: -.035em; }
+        .display-2 { font-size: clamp(2.2rem, 6vw, 4.8rem); line-height: 1; letter-spacing: -.03em; }
+        .display-3 { font-size: clamp(1.6rem, 3.6vw, 2.6rem); line-height: 1.1; letter-spacing: -.02em; }
+
+        /* Quote */
+        blockquote.pull {
+            font-family: 'Fraunces', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-variation-settings: "opsz" 144, "SOFT" 100;
+        }
+
+        /* Tab buttons */
+        .tabbtn { transition: all .3s ease; }
+        .tabbtn[data-active="true"] {
+            background: var(--lime); color: var(--ink-deep);
+            border-color: var(--lime);
+        }
+
+        /* Nav scroll state */
+        nav.scrolled { background: rgba(10, 22, 40, 0.75); border-bottom-color: rgba(255,255,255,.06); }
+
+        /* Accessible focus */
+        a:focus-visible, button:focus-visible, input:focus-visible, textarea:focus-visible {
+            outline: 2px solid var(--lime); outline-offset: 3px; border-radius: 4px;
+        }
     </style>
 </head>
-<body class="mesh-bg">
+<body>
 
-    <!-- NAVEGACIÓN -->
-    <nav class="fixed top-0 w-full z-50 glass-panel px-6 py-4 border-b border-white/5">
-        <div class="max-w-7xl mx-auto flex justify-between items-center">
-            <div class="font-syne font-bold text-2xl text-[#C8F56A]">PDH.</div>
-            <div class="hidden md:flex gap-8 text-sm font-medium text-white/70">
-                <a href="#metodo" class="hover:text-white">El Método</a>
-                <a href="#sinergia" class="hover:text-white">Sinergia</a>
-                <a href="#analizador" class="hover:text-white">Analizador</a>
+<!-- Atmospheric layer -->
+<div class="atmosphere"></div>
+
+<!-- Custom cursor -->
+<div id="cursor-dot"></div>
+<div id="cursor-ring"></div>
+
+<!-- ============== NAVIGATION ============== -->
+<nav class="fixed top-0 left-0 right-0 z-50 px-6 md:px-10 py-4 transition-all duration-300 border-b border-transparent">
+    <div class="max-w-7xl mx-auto flex justify-between items-center">
+        <a href="#top" class="flex items-center gap-3 group">
+            <div class="relative w-9 h-9">
+                <svg viewBox="0 0 36 36" class="w-full h-full">
+                    <path d="M18 4 L33 30 L3 30 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round" class="opacity-30"/>
+                    <circle cx="18" cy="22" r="2.5" fill="var(--lime)" class="pulse-soft" style="transform-origin: 18px 22px;"/>
+                </svg>
             </div>
-            <button class="px-5 py-2 rounded-full border border-white/20 text-sm hover:bg-white hover:text-black transition-all">Ingresar</button>
+            <span class="font-display text-2xl font-medium tracking-tight">PDH<span class="text-[var(--lime)]">.</span></span>
+        </a>
+        <div class="hidden lg:flex gap-9 text-[13px] font-medium text-white/60">
+            <a href="#metodo" class="ulink hover:text-white transition-colors">Método</a>
+            <a href="#triangulo" class="ulink hover:text-white transition-colors">Triángulo</a>
+            <a href="#desequilibrios" class="ulink hover:text-white transition-colors">Desequilibrios</a>
+            <a href="#ejemplos" class="ulink hover:text-white transition-colors">Ejemplos</a>
+            <a href="#guia" class="ulink hover:text-white transition-colors">Guía</a>
+            <a href="#analizador" class="ulink hover:text-white transition-colors">Analizador</a>
         </div>
-    </nav>
+        <a href="#analizador" class="hidden md:inline-flex btn-ghost py-2.5 px-5 text-sm">
+            Empezar análisis <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+        </a>
+        <button id="menu-btn" class="lg:hidden text-white/80"><i data-lucide="menu" class="w-6 h-6"></i></button>
+    </div>
+    <!-- mobile menu -->
+    <div id="mobile-menu" class="hidden lg:hidden mt-4 glass-strong rounded-2xl p-6 max-w-7xl mx-auto">
+        <div class="flex flex-col gap-4 text-white/80">
+            <a href="#metodo" class="hover:text-white">Método</a>
+            <a href="#triangulo" class="hover:text-white">Triángulo</a>
+            <a href="#desequilibrios" class="hover:text-white">Desequilibrios</a>
+            <a href="#ejemplos" class="hover:text-white">Ejemplos</a>
+            <a href="#guia" class="hover:text-white">Guía</a>
+            <a href="#analizador" class="hover:text-white">Analizador</a>
+        </div>
+    </div>
+</nav>
 
-    <!-- HERO SECTION -->
-    <section class="relative min-h-screen flex flex-col items-center justify-center pt-20 px-6 text-center">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium border border-[#C8F56A]/20 text-[#C8F56A] bg-[#C8F56A]/10 mb-8 reveal">EXPERIENCIA DE TRANSFORMACIÓN</span>
-        
-        <h1 class="font-syne text-5xl md:text-8xl font-bold text-white mb-8 leading-tight reveal">
-            Encuentra tu <br/>
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#C8F56A] to-[#4DCFCF]">Punto de Equilibrio</span>
-        </h1>
-        
-        <p class="text-lg md:text-2xl text-white/60 max-w-3xl mx-auto mb-12 font-light reveal">
-            El Método PDH no es una idea abstracta; es el lugar exacto donde convergen tu identidad profunda, tu talento innato y tu capacidad de acción.
+<!-- ============== HERO ============== -->
+<section id="top" class="relative min-h-screen flex items-center pt-32 pb-20 px-6 md:px-10">
+    <div class="absolute inset-0 grid-bg opacity-60"></div>
+    <div class="absolute top-1/3 -left-32 w-96 h-96 bg-[var(--cyan)]/10 rounded-full blur-[120px] float"></div>
+    <div class="absolute bottom-20 right-0 w-96 h-96 bg-[var(--lavender)]/10 rounded-full blur-[120px] float" style="animation-delay:-3s;"></div>
+
+    <div class="relative z-10 max-w-7xl mx-auto w-full grid lg:grid-cols-12 gap-12 items-center">
+        <div class="lg:col-span-7 reveal">
+            <div class="flex items-center gap-3 mb-8">
+                <span class="pill text-[var(--lime)] border-[var(--lime)]/30 bg-[var(--lime)]/5">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[var(--lime)] pulse-soft"></span>
+                    Método Holístico de Transformación
+                </span>
+            </div>
+
+            <h1 class="font-display display-1 font-light mb-8" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                Encontrá tu<br>
+                <em class="font-light italic grad-lime" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">punto exacto</em><br>
+                de equilibrio.
+            </h1>
+
+            <p class="text-lg md:text-xl text-white/70 max-w-2xl mb-10 leading-relaxed font-light">
+                El <strong class="text-white font-medium">Método PDH</strong> es una herramienta de introspección estratégica que reduce la pregunta más difícil de tu vida —<em>¿a qué me dedico?</em>— a un triángulo simple. Tres vértices: <span class="text-[var(--lavender)]">Pasión</span>, <span class="text-[var(--cyan)]">Dones</span>, <span class="text-[var(--peach)]">Habilidades</span>. El centro es tu propósito.
+            </p>
+
+            <div class="flex flex-wrap gap-4 mb-12">
+                <a href="#analizador" class="btn-primary text-base">
+                    Hacer mi análisis <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                </a>
+                <a href="#metodo" class="btn-ghost text-base">
+                    <i data-lucide="book-open" class="w-4 h-4"></i> Conocer el método
+                </a>
+            </div>
+
+            <!-- Mini stats / proof -->
+            <div class="grid grid-cols-3 gap-6 max-w-md pt-8 border-t border-white/10">
+                <div>
+                    <div class="font-display text-3xl font-medium grad-lime">3</div>
+                    <div class="text-xs text-white/50 mt-1 uppercase tracking-wider font-mono">Pilares</div>
+                </div>
+                <div>
+                    <div class="font-display text-3xl font-medium grad-lime">5</div>
+                    <div class="text-xs text-white/50 mt-1 uppercase tracking-wider font-mono">Pasos</div>
+                </div>
+                <div>
+                    <div class="font-display text-3xl font-medium grad-lime">∞</div>
+                    <div class="text-xs text-white/50 mt-1 uppercase tracking-wider font-mono">Aplicaciones</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Hero triangle preview -->
+        <div class="lg:col-span-5 reveal" style="transition-delay:.2s">
+            <div class="relative aspect-square max-w-[440px] mx-auto">
+                <!-- Orbital rings -->
+                <div class="absolute inset-0 spin-slow">
+                    <svg viewBox="0 0 400 400" class="w-full h-full">
+                        <circle cx="200" cy="200" r="195" fill="none" stroke="white" stroke-width="0.5" stroke-opacity="0.08" stroke-dasharray="2 6"/>
+                        <circle cx="200" cy="200" r="160" fill="none" stroke="white" stroke-width="0.5" stroke-opacity="0.06"/>
+                    </svg>
+                </div>
+
+                <!-- Main triangle -->
+                <svg viewBox="0 0 400 400" class="w-full h-full hero-tri relative z-10">
+                    <defs>
+                        <linearGradient id="triGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="var(--lavender)" stop-opacity="0.15"/>
+                            <stop offset="50%" stop-color="var(--cyan)" stop-opacity="0.1"/>
+                            <stop offset="100%" stop-color="var(--peach)" stop-opacity="0.15"/>
+                        </linearGradient>
+                        <radialGradient id="centerGlow">
+                            <stop offset="0%" stop-color="var(--lime)" stop-opacity="0.5"/>
+                            <stop offset="100%" stop-color="var(--lime)" stop-opacity="0"/>
+                        </radialGradient>
+                    </defs>
+
+                    <!-- Glow center -->
+                    <circle cx="200" cy="225" r="80" fill="url(#centerGlow)"/>
+
+                    <!-- Triangle filled -->
+                    <path d="M200 60 L340 295 L60 295 Z" fill="url(#triGrad)" stroke="white" stroke-width="1" stroke-opacity="0.2" stroke-linejoin="round"/>
+
+                    <!-- Inner connection lines from center to vertices -->
+                    <line x1="200" y1="225" x2="200" y2="60" stroke="white" stroke-width="0.5" stroke-opacity="0.15" stroke-dasharray="3 4"/>
+                    <line x1="200" y1="225" x2="340" y2="295" stroke="white" stroke-width="0.5" stroke-opacity="0.15" stroke-dasharray="3 4"/>
+                    <line x1="200" y1="225" x2="60" y2="295" stroke="white" stroke-width="0.5" stroke-opacity="0.15" stroke-dasharray="3 4"/>
+
+                    <!-- Vertices -->
+                    <g style="color: var(--lavender)">
+                        <circle cx="200" cy="60" r="9" fill="currentColor"/>
+                        <circle cx="200" cy="60" r="20" fill="currentColor" fill-opacity="0.2"/>
+                        <text x="200" y="38" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="currentColor" letter-spacing="2">PASIÓN</text>
+                    </g>
+                    <g style="color: var(--peach)">
+                        <circle cx="340" cy="295" r="9" fill="currentColor"/>
+                        <circle cx="340" cy="295" r="20" fill="currentColor" fill-opacity="0.2"/>
+                        <text x="340" y="325" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="currentColor" letter-spacing="2">HABILIDAD</text>
+                    </g>
+                    <g style="color: var(--cyan)">
+                        <circle cx="60" cy="295" r="9" fill="currentColor"/>
+                        <circle cx="60" cy="295" r="20" fill="currentColor" fill-opacity="0.2"/>
+                        <text x="60" y="325" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="currentColor" letter-spacing="2">DONES</text>
+                    </g>
+
+                    <!-- Center -->
+                    <circle cx="200" cy="225" r="14" fill="var(--lime)" class="pulse-soft" style="transform-origin: 200px 225px;"/>
+                    <text x="200" y="262" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="14" fill="white" font-weight="500">propósito</text>
+                </svg>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll cue -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/30 text-[11px] font-mono uppercase tracking-widest">
+        <span>Desplazá</span>
+        <div class="w-px h-10 bg-gradient-to-b from-white/30 to-transparent"></div>
+    </div>
+</section>
+
+<!-- ============== TICKER ============== -->
+<section class="relative z-10 ticker-frame py-6 overflow-hidden">
+    <div class="flex marquee-track whitespace-nowrap font-display italic text-3xl md:text-5xl text-white/15 font-light gap-12">
+        <span>Pasión <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Dones <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Habilidades <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Propósito <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span></span>
+        <span>Pasión <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Dones <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Habilidades <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Propósito <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span></span>
+        <span>Pasión <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Dones <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Habilidades <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span> Propósito <span class="text-[var(--lime)]/40 not-italic font-mono text-2xl mx-4">×</span></span>
+    </div>
+</section>
+
+<!-- ============== INTRO / EDITORIAL ============== -->
+<section id="metodo" class="relative z-10 py-24 md:py-36 px-6 md:px-10">
+    <div class="max-w-6xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>01 / Introducción</span>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-20">
+            <div class="lg:col-span-5 reveal">
+                <h2 class="font-display display-2 font-light mb-6" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                    ¿A qué me debo<br>
+                    <em class="italic font-light grad-warm" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">dedicar</em><br>
+                    en la vida?
+                </h2>
+            </div>
+            <div class="lg:col-span-7 space-y-6 reveal" style="transition-delay:.15s">
+                <p class="text-lg md:text-xl text-white/80 leading-[1.7] dropcap">
+                    Es la pregunta más antigua y más postergada que existe. La que aparece en el silencio del domingo a la tarde, en la pausa entre dos correos, en el viaje de regreso a casa. <strong class="text-white">El Método PDH no la responde por vos: te da un mapa para que vos mismo encuentres la respuesta.</strong>
+                </p>
+                <p class="text-base md:text-lg text-white/65 leading-[1.7]">
+                    Inspirado en el concepto japonés del <em class="text-[var(--gold)] not-italic font-medium">Ikigai</em> y popularizado en habla hispana por el autor <strong class="text-white/85">Sergio Fernández</strong>, el PDH simplifica el modelo original de cuatro círculos en un triángulo de tres puntos. Más práctico. Más accionable. Más honesto.
+                </p>
+                <p class="text-base md:text-lg text-white/65 leading-[1.7]">
+                    La premisa es radical en su simplicidad: tu propósito no es una idea abstracta esperando ser revelada en un retiro espiritual. <strong class="text-white">Es el punto geométrico donde se cruzan tres realidades concretas de tu vida</strong> —lo que amás, lo que se te da naturalmente, y lo que ya sabés hacer bien.
+                </p>
+
+                <!-- Three quick badges -->
+                <div class="grid grid-cols-3 gap-3 pt-6">
+                    <div class="glass rounded-2xl p-4">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--lavender)] mb-2">P · Pasión</div>
+                        <div class="text-sm text-white/70">El "por qué"</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--cyan)] mb-2">D · Dones</div>
+                        <div class="text-sm text-white/70">El "quién soy"</div>
+                    </div>
+                    <div class="glass rounded-2xl p-4">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--peach)] mb-2">H · Habilidad</div>
+                        <div class="text-sm text-white/70">El "qué sé"</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== INTERACTIVE TRIANGLE ============== -->
+<section id="triangulo" class="relative z-10 py-24 md:py-36 px-6 md:px-10 border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>02 / El Triángulo</span>
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16 reveal">
+            <h2 class="font-display display-2 font-light max-w-2xl" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                Tres vértices,<br>
+                <em class="italic grad-lime">un solo centro.</em>
+            </h2>
+            <p class="text-white/60 max-w-md text-base">
+                Hacé clic en cada vértice del triángulo para descubrir su significado profundo y por qué es indispensable.
+            </p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+            <!-- Triangle -->
+            <div class="reveal">
+                <div class="relative aspect-square max-w-[520px] mx-auto">
+                    <svg id="main-triangle" viewBox="0 0 460 460" class="w-full h-full" style="filter: drop-shadow(0 30px 60px rgba(0,0,0,0.4));">
+                        <defs>
+                            <linearGradient id="triFill" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="var(--lavender)" stop-opacity="0.08"/>
+                                <stop offset="100%" stop-color="var(--peach)" stop-opacity="0.08"/>
+                            </linearGradient>
+                            <radialGradient id="centerHalo">
+                                <stop offset="0%" stop-color="var(--lime)" stop-opacity="0.4"/>
+                                <stop offset="70%" stop-color="var(--lime)" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+
+                        <!-- Outer triangle stroke -->
+                        <path d="M230 60 L400 350 L60 350 Z" fill="url(#triFill)" stroke="rgba(255,255,255,0.12)" stroke-width="1.5" stroke-linejoin="round"/>
+
+                        <!-- Internal guide lines from center -->
+                        <line x1="230" y1="253" x2="230" y2="60" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3 5"/>
+                        <line x1="230" y1="253" x2="400" y2="350" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3 5"/>
+                        <line x1="230" y1="253" x2="60" y2="350" stroke="rgba(255,255,255,0.08)" stroke-dasharray="3 5"/>
+
+                        <!-- Center halo + dot -->
+                        <circle cx="230" cy="253" r="60" fill="url(#centerHalo)"/>
+                        <circle cx="230" cy="253" r="10" fill="var(--lime)" class="pulse-soft" style="transform-origin: 230px 253px;"/>
+                        <text x="230" y="290" text-anchor="middle" font-family="Fraunces" font-style="italic" font-size="13" fill="rgba(255,255,255,0.7)">propósito</text>
+
+                        <!-- VERTEX P (Pasión) - top -->
+                        <g class="vertex" data-vertex="p" style="color: var(--lavender)">
+                            <circle cx="230" cy="60" r="32" fill="currentColor" fill-opacity="0.15"/>
+                            <circle cx="230" cy="60" r="14" fill="currentColor"/>
+                            <text x="230" y="66" text-anchor="middle" font-family="Fraunces" font-weight="600" font-size="18" fill="var(--ink-deep)">P</text>
+                            <text x="230" y="28" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="rgba(255,255,255,0.6)" letter-spacing="2">PASIÓN</text>
+                        </g>
+
+                        <!-- VERTEX H (Habilidad) - bottom right -->
+                        <g class="vertex" data-vertex="h" style="color: var(--peach)">
+                            <circle cx="400" cy="350" r="32" fill="currentColor" fill-opacity="0.15"/>
+                            <circle cx="400" cy="350" r="14" fill="currentColor"/>
+                            <text x="400" y="356" text-anchor="middle" font-family="Fraunces" font-weight="600" font-size="18" fill="var(--ink-deep)">H</text>
+                            <text x="400" y="385" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="rgba(255,255,255,0.6)" letter-spacing="2">HABILIDAD</text>
+                        </g>
+
+                        <!-- VERTEX D (Dones) - bottom left -->
+                        <g class="vertex" data-vertex="d" style="color: var(--cyan)">
+                            <circle cx="60" cy="350" r="32" fill="currentColor" fill-opacity="0.15"/>
+                            <circle cx="60" cy="350" r="14" fill="currentColor"/>
+                            <text x="60" y="356" text-anchor="middle" font-family="Fraunces" font-weight="600" font-size="18" fill="var(--ink-deep)">D</text>
+                            <text x="60" y="385" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="rgba(255,255,255,0.6)" letter-spacing="2">DONES</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- Detail panel -->
+            <div class="reveal" style="transition-delay:.15s">
+                <div id="vertex-card" class="glass-strong rounded-[32px] p-8 md:p-10 min-h-[460px] flex flex-col" style="border-color: rgba(200,245,106,.15);">
+                    <div id="vertex-content" class="flex-1 flex flex-col justify-center">
+                        <span class="pill mb-6 self-start"><i data-lucide="hand" class="w-3 h-3"></i> Tocá un vértice</span>
+                        <h3 class="font-display text-3xl md:text-4xl font-light mb-4" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">
+                            Explorá los <em class="italic grad-lime">tres pilares</em>.
+                        </h3>
+                        <p class="text-white/65 text-base leading-relaxed">
+                            Cada vértice del triángulo es una dimensión completa de tu vida. Hacé clic en P, D o H para entender qué representa, qué pasa cuando está fuerte y qué pasa cuando se debilita.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Selectors as buttons (mobile-friendly fallback) -->
+                <div class="grid grid-cols-3 gap-2 mt-4">
+                    <button class="vertex-btn glass rounded-2xl p-4 text-left transition" data-vertex="p" style="border-left: 3px solid var(--lavender)">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--lavender)]">P</div>
+                        <div class="text-sm font-medium mt-1">Pasión</div>
+                    </button>
+                    <button class="vertex-btn glass rounded-2xl p-4 text-left transition" data-vertex="d" style="border-left: 3px solid var(--cyan)">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--cyan)]">D</div>
+                        <div class="text-sm font-medium mt-1">Dones</div>
+                    </button>
+                    <button class="vertex-btn glass rounded-2xl p-4 text-left transition" data-vertex="h" style="border-left: 3px solid var(--peach)">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--peach)]">H</div>
+                        <div class="text-sm font-medium mt-1">Habilidad</div>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== THREE PILLARS DETAILED ============== -->
+<section class="relative z-10 py-24 md:py-32 px-6 md:px-10">
+    <div class="max-w-7xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>03 / Los Pilares en Detalle</span>
+        </div>
+
+        <h2 class="font-display display-2 font-light mb-16 max-w-3xl reveal" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+            Tres preguntas que <em class="italic grad-warm">cambian todo.</em>
+        </h2>
+
+        <div class="space-y-6">
+            <!-- PASIÓN -->
+            <article class="glass rounded-[32px] p-8 md:p-12 grid lg:grid-cols-12 gap-8 reveal" style="border-left: 4px solid var(--lavender);">
+                <div class="lg:col-span-3">
+                    <div class="font-display text-7xl md:text-9xl font-light text-[var(--lavender)] leading-none italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">P</div>
+                    <div class="font-mono text-xs uppercase tracking-widest text-[var(--lavender)] mt-4">Pasión · Los Sueños</div>
+                    <div class="text-2xl font-display italic text-white/50 mt-2" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">¿qué me hace vibrar?</div>
+                </div>
+                <div class="lg:col-span-9 space-y-5">
+                    <p class="text-lg md:text-xl text-white/80 leading-[1.7]">
+                        La Pasión es tu <strong class="text-white">motor emocional</strong>: la dirección en la que tu voluntad se mueve naturalmente, incluso cuando nadie te observa. No es entusiasmo pasajero ni hobby de fin de semana —es eso a lo que volvés una y otra vez sin necesidad de empujarte.
+                    </p>
+                    <p class="text-base text-white/65 leading-relaxed">
+                        Para identificarla, hay una pregunta brutal: <em class="text-[var(--lavender)] not-italic font-medium">"¿Qué haría si no necesitara que me pagaran?"</em>. Si tu respuesta es "no sé" o "dormir", probablemente todavía no la encontraste —y está bien, ese es el punto de partida.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4 pt-2">
+                        <div class="border-l-2 border-[var(--lavender)]/30 pl-4">
+                            <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--lavender)]/80 mb-1">Señales positivas</div>
+                            <div class="text-sm text-white/70">Pierdo la noción del tiempo · Sigo aprendiendo sin obligación · Lo defendería en una discusión</div>
+                        </div>
+                        <div class="border-l-2 border-white/15 pl-4">
+                            <div class="font-mono text-[10px] uppercase tracking-wider text-white/40 mb-1">Sin pasión, ¿qué pasa?</div>
+                            <div class="text-sm text-white/70">Aparece el burnout, la sensación de "estar cumpliendo", el éxito sin sabor.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- DONES -->
+            <article class="glass rounded-[32px] p-8 md:p-12 grid lg:grid-cols-12 gap-8 reveal" style="border-left: 4px solid var(--cyan);">
+                <div class="lg:col-span-3">
+                    <div class="font-display text-7xl md:text-9xl font-light text-[var(--cyan)] leading-none italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">D</div>
+                    <div class="font-mono text-xs uppercase tracking-widest text-[var(--cyan)] mt-4">Dones · Esencia</div>
+                    <div class="text-2xl font-display italic text-white/50 mt-2" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">¿qué se me da fácil?</div>
+                </div>
+                <div class="lg:col-span-9 space-y-5">
+                    <p class="text-lg md:text-xl text-white/80 leading-[1.7]">
+                        Los Dones son tus <strong class="text-white">facultades innatas</strong>: capacidades naturales que existen antes de cualquier título o curso. Son lo que los demás te piden sin saber por qué, lo que hacés sin esfuerzo aparente, lo que te define cuando dejás de actuar.
+                    </p>
+                    <p class="text-base text-white/65 leading-relaxed">
+                        Aquí ocurre el sesgo más común del método: <em class="text-[var(--cyan)] not-italic font-medium">como te resulta fácil, tendés a no valorarlo</em>. Pensás "esto cualquiera lo hace". Falso. Lo que para vos es respirar, para el resto es escalar el Everest. Tu intuición, tu escucha, tu lógica, tu creatividad —son tu firma única.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4 pt-2">
+                        <div class="border-l-2 border-[var(--cyan)]/30 pl-4">
+                            <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--cyan)]/80 mb-1">Cómo descubrirlos</div>
+                            <div class="text-sm text-white/70">Preguntale a 5 personas qué hacés bien · Anotá lo que la gente te pide · Notá lo que te resulta extrañamente fácil</div>
+                        </div>
+                        <div class="border-l-2 border-white/15 pl-4">
+                            <div class="font-mono text-[10px] uppercase tracking-wider text-white/40 mb-1">Sin dones, ¿qué pasa?</div>
+                            <div class="text-sm text-white/70">Sentís que estás "actuando" un personaje, forzando una naturaleza que no es la tuya.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- HABILIDAD -->
+            <article class="glass rounded-[32px] p-8 md:p-12 grid lg:grid-cols-12 gap-8 reveal" style="border-left: 4px solid var(--peach);">
+                <div class="lg:col-span-3">
+                    <div class="font-display text-7xl md:text-9xl font-light text-[var(--peach)] leading-none italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">H</div>
+                    <div class="font-mono text-xs uppercase tracking-widest text-[var(--peach)] mt-4">Habilidades · Técnica</div>
+                    <div class="text-2xl font-display italic text-white/50 mt-2" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">¿en qué soy experto?</div>
+                </div>
+                <div class="lg:col-span-9 space-y-5">
+                    <p class="text-lg md:text-xl text-white/80 leading-[1.7]">
+                        Las Habilidades son tu <strong class="text-white">expertise técnico</strong>: la maestría que ganaste con tiempo, estudio y repetición. Si los Dones son el potencial crudo, las Habilidades son la herramienta pulida. Son el "qué sé hacer" verificable, lo que pondrías en un CV sin sentir que mentís.
+                    </p>
+                    <p class="text-base text-white/65 leading-relaxed">
+                        Aquí entra el famoso principio de las <em class="text-[var(--peach)] not-italic font-medium">10.000 horas</em>: las habilidades no se descubren, se construyen. Programar, vender, diseñar, enseñar, operar, escribir, liderar. Es el componente práctico que permite que tu propósito genere <strong class="text-white">resultados tangibles y, sí, dinero</strong>.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4 pt-2">
+                        <div class="border-l-2 border-[var(--peach)]/30 pl-4">
+                            <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--peach)]/80 mb-1">Inventario práctico</div>
+                            <div class="text-sm text-white/70">¿Dónde invertiste las últimas 10.000 horas? · ¿Qué herramientas dominás? · ¿Por qué te contratan?</div>
+                        </div>
+                        <div class="border-l-2 border-white/15 pl-4">
+                            <div class="font-mono text-[10px] uppercase tracking-wider text-white/40 mb-1">Sin habilidad, ¿qué pasa?</div>
+                            <div class="text-sm text-white/70">Tenés ideas hermosas que nunca aterrizan. Idealismo sin impacto en el mundo real.</div>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ============== PULL QUOTE ============== -->
+<section class="relative z-10 py-20 px-6 md:px-10">
+    <div class="max-w-5xl mx-auto text-center reveal">
+        <div class="text-[var(--lime)] font-mono text-xs uppercase tracking-widest mb-8">El centro del triángulo</div>
+        <blockquote class="pull text-3xl md:text-5xl lg:text-6xl text-white/90 leading-[1.15]">
+            "El propósito no se busca afuera.<br>
+            <em class="grad-lime">Es el punto donde tu mejor versión se pone al servicio de lo que más te importa.</em>"
+        </blockquote>
+    </div>
+</section>
+
+<!-- ============== IMBALANCES (PERSONAS) ============== -->
+<section id="desequilibrios" class="relative z-10 py-24 md:py-36 px-6 md:px-10 border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>04 / Los Desequilibrios</span>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-12 items-end mb-16">
+            <h2 class="font-display display-2 font-light reveal" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                Cuando<br>
+                <em class="italic grad-warm">falta una pata,</em><br>
+                la mesa se cae.
+            </h2>
+            <p class="text-white/65 text-lg leading-relaxed reveal" style="transition-delay:.1s">
+                La mayoría de las personas opera con <strong class="text-white">solo dos vértices activos</strong> y se pregunta por qué algo no termina de funcionar. Estos son los tres arquetipos clásicos del desequilibrio. ¿En cuál estás vos hoy?
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-5">
+            <!-- P + D = Idealismo -->
+            <article class="case glass rounded-[28px] p-7 reveal">
+                <div class="relative w-full aspect-square mb-6 overflow-hidden rounded-[20px] flex items-center justify-center" style="background: radial-gradient(circle at 50% 50%, rgba(197,184,232,0.15), rgba(77,207,207,0.08), transparent);">
+                    <div class="blob absolute inset-6 opacity-40" style="background: linear-gradient(135deg, var(--lavender), var(--cyan));"></div>
+                    <div class="relative font-display text-7xl text-white/95 font-light" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">
+                        <span class="text-[var(--lavender)]">P</span>+<span class="text-[var(--cyan)]">D</span>
+                    </div>
+                </div>
+                <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--lavender)] mb-3">Sin H · Falta Habilidad</div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">El Soñador idealista</h3>
+                <p class="text-white/65 text-sm leading-relaxed mb-5">
+                    Tiene visión, talento natural y entusiasmo desbordante. Empieza diez proyectos hermosos, no termina ninguno. Le falta la técnica, el oficio, la disciplina del cómo.
+                </p>
+                <div class="text-xs text-white/40 italic font-display" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">
+                    "Sé exactamente qué quiero hacer en el mundo, pero no tengo idea de cómo lograrlo."
+                </div>
+                <div class="mt-5 pt-5 border-t border-white/10">
+                    <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--lime)]/80 mb-1.5">Solución</div>
+                    <div class="text-sm text-white/70">Aprender un oficio concreto. Cursos, mentorías, práctica deliberada.</div>
+                </div>
+            </article>
+
+            <!-- D + H = Vacío -->
+            <article class="case glass rounded-[28px] p-7 reveal" style="transition-delay:.1s">
+                <div class="relative w-full aspect-square mb-6 overflow-hidden rounded-[20px] flex items-center justify-center" style="background: radial-gradient(circle at 50% 50%, rgba(77,207,207,0.15), rgba(240,168,132,0.08), transparent);">
+                    <div class="blob absolute inset-6 opacity-40" style="background: linear-gradient(135deg, var(--cyan), var(--peach)); animation-delay: -4s;"></div>
+                    <div class="relative font-display text-7xl text-white/95 font-light" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">
+                        <span class="text-[var(--cyan)]">D</span>+<span class="text-[var(--peach)]">H</span>
+                    </div>
+                </div>
+                <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--cyan)] mb-3">Sin P · Falta Pasión</div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">El Profesional vacío</h3>
+                <p class="text-white/65 text-sm leading-relaxed mb-5">
+                    Es bueno, le pagan bien, le proyectan ascensos. Por fuera, una vida envidiable. Por dentro, el domingo a la noche se vuelve insoportable. Le falta sentido.
+                </p>
+                <div class="text-xs text-white/40 italic font-display" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">
+                    "Soy excelente en algo que me da exactamente cero alegría."
+                </div>
+                <div class="mt-5 pt-5 border-t border-white/10">
+                    <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--lime)]/80 mb-1.5">Solución</div>
+                    <div class="text-sm text-white/70">Reconectar con sueños postergados. Inyectar tu pasión a tu expertise actual.</div>
+                </div>
+            </article>
+
+            <!-- P + H = Forzado -->
+            <article class="case glass rounded-[28px] p-7 reveal" style="transition-delay:.2s">
+                <div class="relative w-full aspect-square mb-6 overflow-hidden rounded-[20px] flex items-center justify-center" style="background: radial-gradient(circle at 50% 50%, rgba(197,184,232,0.15), rgba(240,168,132,0.08), transparent);">
+                    <div class="blob absolute inset-6 opacity-40" style="background: linear-gradient(135deg, var(--lavender), var(--peach)); animation-delay: -8s;"></div>
+                    <div class="relative font-display text-7xl text-white/95 font-light" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">
+                        <span class="text-[var(--lavender)]">P</span>+<span class="text-[var(--peach)]">H</span>
+                    </div>
+                </div>
+                <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--peach)] mb-3">Sin D · Falta Esencia</div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">El Esforzado constante</h3>
+                <p class="text-white/65 text-sm leading-relaxed mb-5">
+                    Le gusta lo que hace y lo hace técnicamente bien, pero todo cuesta el doble. Se está peleando contra su propia naturaleza. Compite en una liga que no es la suya.
+                </p>
+                <div class="text-xs text-white/40 italic font-display" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">
+                    "Amo esto y entreno duro, pero siempre siento que estoy remando contra la corriente."
+                </div>
+                <div class="mt-5 pt-5 border-t border-white/10">
+                    <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--lime)]/80 mb-1.5">Solución</div>
+                    <div class="text-sm text-white/70">Auditar tus dones reales. Quizás amás el campo, pero tu rol natural es otro dentro de él.</div>
+                </div>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ============== EXAMPLES GALLERY ============== -->
+<section id="ejemplos" class="relative z-10 py-24 md:py-36 px-6 md:px-10">
+    <div class="max-w-7xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>05 / Ejemplos Reales</span>
+        </div>
+
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 mb-16 reveal">
+            <h2 class="font-display display-2 font-light max-w-3xl" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                El método<br>
+                <em class="italic grad-lime">en acción.</em>
+            </h2>
+            <p class="text-white/60 max-w-md">
+                Cinco ejemplos cotidianos analizados con el triángulo. Solo uno funciona. ¿Podés identificarlo antes de leer la conclusión?
+            </p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex flex-wrap gap-2 mb-8 reveal">
+            <button class="tabbtn pill" data-tab="all" data-active="true">Todos</button>
+            <button class="tabbtn pill" data-tab="fail">Desequilibrados</button>
+            <button class="tabbtn pill" data-tab="win">Equilibrados</button>
+        </div>
+
+        <div id="examples-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <!-- 1 - sonidos animales (FAIL) -->
+            <article class="ex-card glass rounded-[24px] p-6 example" data-status="fail">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-3xl">🐮</span>
+                    <span class="pill text-[var(--rust)] border-[var(--rust)]/40 bg-[var(--rust)]/5">No funciona</span>
+                </div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Imitar sonidos de animales</h3>
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--lavender)]">Pasión</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--lavender)]/40" style="width:15%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">1/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--cyan)]">Dones</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--cyan)]" style="width:80%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">8/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--peach)]">Habilidad</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--peach)]" style="width:75%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">7/10</span>
+                    </div>
+                </div>
+                <p class="text-sm text-white/60 leading-relaxed">Tenés talento natural y le pegás técnicamente, pero no te apasiona ni te genera ingreso. Es habilidad de fiesta.</p>
+            </article>
+
+            <!-- 2 - patinaje (FAIL) -->
+            <article class="ex-card glass rounded-[24px] p-6 example" data-status="fail">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-3xl">⛸️</span>
+                    <span class="pill text-[var(--rust)] border-[var(--rust)]/40 bg-[var(--rust)]/5">No funciona</span>
+                </div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Patinaje artístico</h3>
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--lavender)]">Pasión</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--lavender)]" style="width:95%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">9/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--cyan)]">Dones</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--cyan)]" style="width:80%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">8/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--peach)]">Habilidad</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--peach)]" style="width:70%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">7/10</span>
+                    </div>
+                </div>
+                <p class="text-sm text-white/60 leading-relaxed">Pasión y técnica al máximo, pero el mercado no recompensa salvo a la élite mundial. Hobby legítimo, no profesión sostenible.</p>
+            </article>
+
+            <!-- 3 - trading (FAIL) -->
+            <article class="ex-card glass rounded-[24px] p-6 example" data-status="fail">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-3xl">📉</span>
+                    <span class="pill text-[var(--rust)] border-[var(--rust)]/40 bg-[var(--rust)]/5">No funciona</span>
+                </div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Trading bursátil</h3>
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--lavender)]">Pasión</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--lavender)]/40" style="width:20%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">2/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--cyan)]">Dones</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--cyan)]/40" style="width:30%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">3/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--peach)]">Habilidad</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--peach)]/40" style="width:25%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">3/10</span>
+                    </div>
+                </div>
+                <p class="text-sm text-white/60 leading-relaxed">El mercado paga, pero ni el carácter ni la pasión están. Trampa clásica: elegir por dinero. Termina en pérdidas y desgaste.</p>
+            </article>
+
+            <!-- 4 - redes sociales (WIN) -->
+            <article class="ex-card glass rounded-[24px] p-6 example" data-status="win" style="border-color: var(--lime); background: linear-gradient(180deg, rgba(200,245,106,0.08), rgba(255,255,255,0.03));">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-3xl">📱</span>
+                    <span class="pill text-[var(--lime)] border-[var(--lime)]/40 bg-[var(--lime)]/10"><i data-lucide="check" class="w-3 h-3"></i> Equilibrio</span>
+                </div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Gestión de redes sociales para marcas</h3>
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--lavender)]">Pasión</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--lavender)]" style="width:90%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">9/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--cyan)]">Dones</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--cyan)]" style="width:85%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">8/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--peach)]">Habilidad</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--peach)]" style="width:88%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">9/10</span>
+                    </div>
+                </div>
+                <p class="text-sm text-white/80 leading-relaxed">Te apasiona la comunicación, tenés ojo natural para tendencias, y dominás las plataformas. <strong class="text-white">Las tres patas en pie: ese es tu camino.</strong></p>
+            </article>
+
+            <!-- 5 - enseñar online (WIN) -->
+            <article class="ex-card glass rounded-[24px] p-6 example" data-status="win" style="border-color: var(--lime); background: linear-gradient(180deg, rgba(200,245,106,0.08), rgba(255,255,255,0.03));">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-3xl">🎓</span>
+                    <span class="pill text-[var(--lime)] border-[var(--lime)]/40 bg-[var(--lime)]/10"><i data-lucide="check" class="w-3 h-3"></i> Equilibrio</span>
+                </div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Enseñar tu oficio online</h3>
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--lavender)]">Pasión</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--lavender)]" style="width:85%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">8/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--cyan)]">Dones</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--cyan)]" style="width:80%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">8/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--peach)]">Habilidad</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--peach)]" style="width:95%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">9/10</span>
+                    </div>
+                </div>
+                <p class="text-sm text-white/80 leading-relaxed">Si llevás 10+ años en algo, tenés vocación de transmitir y la habilidad técnica, monetizar enseñando es una zona de propósito casi perfecta.</p>
+            </article>
+
+            <!-- 6 - influencer (FAIL) -->
+            <article class="ex-card glass rounded-[24px] p-6 example" data-status="fail">
+                <div class="flex items-center justify-between mb-4">
+                    <span class="text-3xl">📸</span>
+                    <span class="pill text-[var(--rust)] border-[var(--rust)]/40 bg-[var(--rust)]/5">No funciona</span>
+                </div>
+                <h3 class="font-display text-2xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Ser influencer "porque sí"</h3>
+                <div class="space-y-2 mb-4">
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--lavender)]">Pasión</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--lavender)]/40" style="width:35%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">3/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--cyan)]">Dones</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--cyan)]/40" style="width:25%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">3/10</span>
+                    </div>
+                    <div class="flex items-center gap-3 text-sm">
+                        <span class="font-mono text-[10px] uppercase w-16 text-[var(--peach)]">Habilidad</span>
+                        <div class="flex-1 h-1.5 bg-white/5 rounded-full overflow-hidden"><div class="h-full bg-[var(--peach)]/40" style="width:30%"></div></div>
+                        <span class="text-xs text-white/50 w-8 text-right">3/10</span>
+                    </div>
+                </div>
+                <p class="text-sm text-white/60 leading-relaxed">Trampa de la era: querer ser visible sin tener algo qué decir. Sin pasión real, sin don comunicativo, sin oficio. Receta para el agotamiento.</p>
+            </article>
+        </div>
+    </div>
+</section>
+
+<!-- ============== STEP-BY-STEP GUIDE ============== -->
+<section id="guia" class="relative z-10 py-24 md:py-36 px-6 md:px-10 border-t border-white/5">
+    <div class="max-w-6xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>06 / Guía Práctica</span>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-12 mb-16">
+            <h2 class="lg:col-span-7 font-display display-2 font-light reveal" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                Cinco pasos.<br>
+                <em class="italic grad-lime">Una hoja de papel.</em><br>
+                Todo lo que cambia.
+            </h2>
+            <p class="lg:col-span-5 self-end text-white/60 text-base leading-relaxed reveal" style="transition-delay:.1s">
+                Este ejercicio funciona mejor offline. Apartá 30 minutos sin notificaciones, agarrá una hoja en blanco y trabajá con honestidad brutal. Volvé después al analizador digital de esta página para validar.
+            </p>
+        </div>
+
+        <!-- Steps -->
+        <ol class="space-y-3">
+            <!-- Step 1 -->
+            <li>
+                <details class="glass rounded-[28px] reveal" open>
+                    <summary class="p-6 md:p-8 flex items-start gap-5 md:gap-8">
+                        <span class="step-num text-5xl md:text-6xl text-[var(--lime)] leading-none">01</span>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-4">
+                                <h3 class="font-display text-xl md:text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Explorar — Lista de cinco</h3>
+                                <span class="acc-icon"><i data-lucide="plus" class="w-5 h-5 text-white/60"></i></span>
+                            </div>
+                            <p class="text-white/55 text-sm mt-2">Anotá cinco actividades a las que te dedicarías sin restricciones financieras.</p>
+                        </div>
+                    </summary>
+                    <div class="px-6 md:px-8 pb-8 md:pb-10 pl-[5.5rem] md:pl-[8rem] -mt-2 space-y-4">
+                        <p class="text-white/75 leading-relaxed">
+                            La regla es radical: <strong class="text-white">si tuvieras la cuenta bancaria resuelta para siempre, ¿qué seguirías haciendo igual?</strong> No pienses en mercado, ni en vergüenza, ni en lo que dirá tu familia. Cinco actividades, sin filtro.
+                        </p>
+                        <div class="glass rounded-2xl p-5">
+                            <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--lime)]/80 mb-3">Ejemplo</div>
+                            <ol class="text-sm text-white/75 space-y-1.5 list-decimal list-inside">
+                                <li>Escribir cuentos cortos de ciencia ficción</li>
+                                <li>Cocinar para grupos grandes los domingos</li>
+                                <li>Enseñar matemática a chicos con dificultades</li>
+                                <li>Restaurar muebles antiguos</li>
+                                <li>Crear música electrónica ambiental</li>
+                            </ol>
+                        </div>
+                    </div>
+                </details>
+            </li>
+
+            <!-- Step 2 -->
+            <li>
+                <details class="glass rounded-[28px] reveal">
+                    <summary class="p-6 md:p-8 flex items-start gap-5 md:gap-8">
+                        <span class="step-num text-5xl md:text-6xl text-[var(--lime)] leading-none">02</span>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-4">
+                                <h3 class="font-display text-xl md:text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Auditar — Tres notas por idea</h3>
+                                <span class="acc-icon"><i data-lucide="plus" class="w-5 h-5 text-white/60"></i></span>
+                            </div>
+                            <p class="text-white/55 text-sm mt-2">Calificá cada idea del 1 al 10 en Pasión, Dones y Habilidad.</p>
+                        </div>
+                    </summary>
+                    <div class="px-6 md:px-8 pb-8 md:pb-10 pl-[5.5rem] md:pl-[8rem] -mt-2 space-y-4">
+                        <p class="text-white/75 leading-relaxed">
+                            Para cada actividad de tu lista, dibujá su triángulo PDH y asignále una nota a cada vértice. <strong class="text-white">Sé honesto, no idealista</strong>: la habilidad real se mide por lo que ya producís, no por lo que sentís que podrías producir.
+                        </p>
+                        <div class="grid sm:grid-cols-3 gap-3">
+                            <div class="glass rounded-xl p-4">
+                                <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--lavender)] mb-2">Pasión</div>
+                                <div class="text-sm text-white/70">¿Cuánto te entusiasma realmente, en escala 1-10?</div>
+                            </div>
+                            <div class="glass rounded-xl p-4">
+                                <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--cyan)] mb-2">Dones</div>
+                                <div class="text-sm text-white/70">¿Qué tan natural es para vos, sin esfuerzo?</div>
+                            </div>
+                            <div class="glass rounded-xl p-4">
+                                <div class="font-mono text-[10px] uppercase tracking-wider text-[var(--peach)] mb-2">Habilidad</div>
+                                <div class="text-sm text-white/70">¿Cuán bien lo hacés hoy, técnicamente?</div>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </li>
+
+            <!-- Step 3 -->
+            <li>
+                <details class="glass rounded-[28px] reveal">
+                    <summary class="p-6 md:p-8 flex items-start gap-5 md:gap-8">
+                        <span class="step-num text-5xl md:text-6xl text-[var(--lime)] leading-none">03</span>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-4">
+                                <h3 class="font-display text-xl md:text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Filtrar — Buscar el equilibrio</h3>
+                                <span class="acc-icon"><i data-lucide="plus" class="w-5 h-5 text-white/60"></i></span>
+                            </div>
+                            <p class="text-white/55 text-sm mt-2">Identificá las opciones donde las tres patas pasan los 7/10.</p>
+                        </div>
+                    </summary>
+                    <div class="px-6 md:px-8 pb-8 md:pb-10 pl-[5.5rem] md:pl-[8rem] -mt-2 space-y-4">
+                        <p class="text-white/75 leading-relaxed">
+                            Mirá tu hoja: ¿cuáles son las dos o tres ideas donde los tres puntos están altos? Ese es tu <strong class="text-white">campo de propósito real</strong>. Probablemente te sorprenda: rara vez es la idea más obvia, ni la más romántica, ni la mejor pagada.
+                        </p>
+                        <p class="text-white/65 text-sm leading-relaxed italic">
+                            Si <em>ninguna</em> idea pasa el filtro, no es un error del método: es información. Significa que tu lista actual no contiene tu propósito. Volvé al paso 1 ampliando.
+                        </p>
+                    </div>
+                </details>
+            </li>
+
+            <!-- Step 4 -->
+            <li>
+                <details class="glass rounded-[28px] reveal">
+                    <summary class="p-6 md:p-8 flex items-start gap-5 md:gap-8">
+                        <span class="step-num text-5xl md:text-6xl text-[var(--lime)] leading-none">04</span>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-4">
+                                <h3 class="font-display text-xl md:text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Accionar — Fortalecer la pata débil</h3>
+                                <span class="acc-icon"><i data-lucide="plus" class="w-5 h-5 text-white/60"></i></span>
+                            </div>
+                            <p class="text-white/55 text-sm mt-2">Diseñá un plan de 90 días para subir el vértice más bajo del triángulo elegido.</p>
+                        </div>
+                    </summary>
+                    <div class="px-6 md:px-8 pb-8 md:pb-10 pl-[5.5rem] md:pl-[8rem] -mt-2 space-y-4">
+                        <p class="text-white/75 leading-relaxed">
+                            De la idea ganadora, identificá qué pata es la más corta. Esa es tu prioridad. Si te falta habilidad, buscá un curso o mentor concreto. Si te falta claridad sobre tu don, pedí feedback a 5 personas. Si te falta pasión auténtica, quizás tenés que combinarla con otra idea.
+                        </p>
+                        <div class="glass rounded-2xl p-5">
+                            <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--lime)]/80 mb-3">Plantilla de plan 90 días</div>
+                            <div class="text-sm text-white/75 space-y-2">
+                                <p><strong class="text-white">Mes 1:</strong> Diagnóstico profundo + 1 acción concreta semanal.</p>
+                                <p><strong class="text-white">Mes 2:</strong> Producir output visible (cliente real, proyecto real).</p>
+                                <p><strong class="text-white">Mes 3:</strong> Evaluar resultados, refinar, decidir si escalar.</p>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </li>
+
+            <!-- Step 5 -->
+            <li>
+                <details class="glass rounded-[28px] reveal">
+                    <summary class="p-6 md:p-8 flex items-start gap-5 md:gap-8">
+                        <span class="step-num text-5xl md:text-6xl text-[var(--lime)] leading-none">05</span>
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between gap-4">
+                                <h3 class="font-display text-xl md:text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">Iterar — Probar, medir, ajustar</h3>
+                                <span class="acc-icon"><i data-lucide="plus" class="w-5 h-5 text-white/60"></i></span>
+                            </div>
+                            <p class="text-white/55 text-sm mt-2">El equilibrio no es un destino. Es un proceso dinámico que se reevalúa cada trimestre.</p>
+                        </div>
+                    </summary>
+                    <div class="px-6 md:px-8 pb-8 md:pb-10 pl-[5.5rem] md:pl-[8rem] -mt-2 space-y-4">
+                        <p class="text-white/75 leading-relaxed">
+                            Repetí el ejercicio cada 3 meses. Tus pasiones cambian, tus dones se profundizan, tus habilidades evolucionan. <strong class="text-white">El triángulo no es estático: es una brújula viva</strong>. Lo que era equilibrio hace un año puede no serlo hoy —y eso es parte sana del proceso.
+                        </p>
+                        <p class="text-white/65 text-sm leading-relaxed italic">
+                            Tip extra: este método también funciona perfecto para clarificar a clientes, hijos, amigos. Compartilo. Cuanta más gente lo use, más claro se vuelve para vos.
+                        </p>
+                    </div>
+                </details>
+            </li>
+        </ol>
+    </div>
+</section>
+
+<!-- ============== INTERACTIVE ANALYZER ============== -->
+<section id="analizador" class="relative z-10 py-24 md:py-36 px-6 md:px-10 border-t border-white/5">
+    <div class="max-w-7xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>07 / Tu Análisis</span>
+        </div>
+
+        <div class="text-center max-w-3xl mx-auto mb-14 reveal">
+            <h2 class="font-display display-2 font-light mb-6" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                El triángulo<br>
+                <em class="italic grad-lime">de tu vida.</em>
+            </h2>
+            <p class="text-white/65 text-lg">
+                Movimiento real. Cuanto más altos los valores, más cerca está tu actividad del centro del triángulo. Probá distintos escenarios y observá cómo cambia tu zona de impacto.
+            </p>
+        </div>
+
+        <div class="glass-strong rounded-[40px] p-6 md:p-12 reveal" style="border-color: rgba(200,245,106,0.18);">
+            <div class="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+
+                <!-- LIVE TRIANGLE -->
+                <div class="order-2 lg:order-1">
+                    <div class="text-center mb-6">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-white/40 mb-2">Tu triángulo en vivo</div>
+                        <div id="balance-label" class="font-display text-2xl italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">esperando datos…</div>
+                    </div>
+
+                    <svg id="user-tri-svg" viewBox="0 0 460 460" class="w-full h-auto max-w-md mx-auto">
+                        <defs>
+                            <radialGradient id="userGlow">
+                                <stop offset="0%" stop-color="var(--lime)" stop-opacity="0.5"/>
+                                <stop offset="100%" stop-color="var(--lime)" stop-opacity="0"/>
+                            </radialGradient>
+                        </defs>
+
+                        <!-- Reference triangle (max) -->
+                        <path d="M230 60 L400 350 L60 350 Z" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" stroke-dasharray="4 6"/>
+
+                        <!-- User-drawn triangle path (will be updated) -->
+                        <path id="user-tri-path" d="M230 230 L230 230 L230 230 Z"
+                              fill="rgba(200,245,106,0.12)"
+                              stroke="var(--lime)" stroke-width="2" stroke-linejoin="round"
+                              style="transition: d 0.5s cubic-bezier(.4,0,.2,1);"/>
+
+                        <!-- Reference vertex points -->
+                        <g class="opacity-25">
+                            <circle cx="230" cy="60" r="4" fill="var(--lavender)"/>
+                            <circle cx="400" cy="350" r="4" fill="var(--peach)"/>
+                            <circle cx="60" cy="350" r="4" fill="var(--cyan)"/>
+                        </g>
+
+                        <!-- Live user vertices -->
+                        <circle id="live-p" cx="230" cy="230" r="9" fill="var(--lavender)" class="v-pulse" style="transition: cy 0.5s cubic-bezier(.4,0,.2,1);"/>
+                        <circle id="live-h" cx="230" cy="230" r="9" fill="var(--peach)" class="v-pulse" style="transition: cx 0.5s cubic-bezier(.4,0,.2,1), cy 0.5s cubic-bezier(.4,0,.2,1);"/>
+                        <circle id="live-d" cx="230" cy="230" r="9" fill="var(--cyan)" class="v-pulse" style="transition: cx 0.5s cubic-bezier(.4,0,.2,1), cy 0.5s cubic-bezier(.4,0,.2,1);"/>
+
+                        <!-- Center marker -->
+                        <circle cx="230" cy="253" r="5" fill="white" opacity="0.6"/>
+
+                        <!-- Labels -->
+                        <text x="230" y="40" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="rgba(255,255,255,0.4)" letter-spacing="2">P</text>
+                        <text x="415" y="365" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="rgba(255,255,255,0.4)" letter-spacing="2">H</text>
+                        <text x="45" y="365" text-anchor="middle" font-family="JetBrains Mono" font-size="10" fill="rgba(255,255,255,0.4)" letter-spacing="2">D</text>
+                    </svg>
+
+                    <div class="grid grid-cols-3 gap-3 mt-6 max-w-md mx-auto">
+                        <div class="text-center">
+                            <div id="score-p" class="font-display text-3xl font-light text-[var(--lavender)]">5</div>
+                            <div class="font-mono text-[10px] uppercase text-white/40 tracking-widest">Pasión</div>
+                        </div>
+                        <div class="text-center">
+                            <div id="score-d" class="font-display text-3xl font-light text-[var(--cyan)]">5</div>
+                            <div class="font-mono text-[10px] uppercase text-white/40 tracking-widest">Dones</div>
+                        </div>
+                        <div class="text-center">
+                            <div id="score-h" class="font-display text-3xl font-light text-[var(--peach)]">5</div>
+                            <div class="font-mono text-[10px] uppercase text-white/40 tracking-widest">Habilidad</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INPUTS -->
+                <div class="order-1 lg:order-2 space-y-7">
+                    <div>
+                        <label class="block mb-3">
+                            <span class="font-mono text-[11px] uppercase tracking-widest text-[var(--lavender)]">¿Qué actividad querés analizar?</span>
+                        </label>
+                        <input id="activity-input" type="text" placeholder="Ej: enseñar yoga online, vender muebles vintage, escribir copy…"
+                               class="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-white placeholder-white/30 focus:border-[var(--lime)]/50 outline-none transition-colors">
+                    </div>
+
+                    <div class="space-y-5">
+                        <!-- P slider -->
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="font-mono text-[11px] uppercase tracking-widest text-[var(--lavender)]">Pasión</label>
+                                <span class="text-xs text-white/50 italic font-display">¿cuánto te enciende?</span>
+                            </div>
+                            <input type="range" min="0" max="10" value="5" class="slider-p" id="slider-p">
+                        </div>
+                        <!-- D slider -->
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="font-mono text-[11px] uppercase tracking-widest text-[var(--cyan)]">Dones</label>
+                                <span class="text-xs text-white/50 italic font-display">¿qué tan natural?</span>
+                            </div>
+                            <input type="range" min="0" max="10" value="5" class="slider-d" id="slider-d">
+                        </div>
+                        <!-- H slider -->
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <label class="font-mono text-[11px] uppercase tracking-widest text-[var(--peach)]">Habilidad</label>
+                                <span class="text-xs text-white/50 italic font-display">¿qué tan diestro?</span>
+                            </div>
+                            <input type="range" min="0" max="10" value="5" class="slider-h" id="slider-h">
+                        </div>
+                    </div>
+
+                    <button id="reveal-btn" class="btn-primary w-full justify-center text-base py-4">
+                        <i data-lucide="sparkles" class="w-5 h-5"></i> Revelar mi diagnóstico
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- RESULT -->
+            <div id="result-box" class="hidden mt-10 pt-10 border-t border-white/10">
+                <div class="grid md:grid-cols-3 gap-5 mb-6">
+                    <div class="glass rounded-2xl p-5">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-white/50 mb-2">Diagnóstico</div>
+                        <div id="result-status" class="font-display text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">—</div>
+                    </div>
+                    <div class="glass rounded-2xl p-5">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-white/50 mb-2">Pata más débil</div>
+                        <div id="result-weakest" class="font-display text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">—</div>
+                    </div>
+                    <div class="glass rounded-2xl p-5">
+                        <div class="font-mono text-[10px] uppercase tracking-widest text-white/50 mb-2">Equilibrio total</div>
+                        <div id="result-balance" class="font-display text-2xl font-medium" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">—%</div>
+                    </div>
+                </div>
+                <div class="glass rounded-2xl p-6 md:p-8">
+                    <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--lime)]/80 mb-3">Lectura del método</div>
+                    <p id="result-text" class="text-white/85 leading-relaxed text-base md:text-lg italic font-display" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">—</p>
+                </div>
+                <div class="glass rounded-2xl p-6 md:p-8 mt-3" id="result-action-box">
+                    <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--lime)]/80 mb-3">Próxima acción concreta</div>
+                    <p id="result-action" class="text-white/85 leading-relaxed text-base">—</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== RESOURCES / ORIGIN ============== -->
+<section class="relative z-10 py-24 md:py-32 px-6 md:px-10 border-t border-white/5">
+    <div class="max-w-6xl mx-auto">
+        <div class="divider mb-10 reveal">
+            <span>08 / Origen y Lecturas</span>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-12">
+            <div class="lg:col-span-5 reveal">
+                <h2 class="font-display display-3 font-light mb-6" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+                    De Japón al<br>
+                    <em class="italic grad-warm">coaching iberoamericano.</em>
+                </h2>
+                <p class="text-white/65 leading-relaxed mb-4">
+                    El triángulo PDH es una <strong class="text-white">simplificación estratégica del Ikigai japonés</strong> —ese diagrama de cuatro círculos que cruza pasión, vocación, profesión y misión.
+                </p>
+                <p class="text-white/65 leading-relaxed">
+                    Su mayor exponente en habla hispana es <strong class="text-white">Sergio Fernández</strong>, conferencista y autor del Instituto de Pensamiento Positivo. Adaptó el modelo a tres puntas porque sostiene que tres es el número mínimo viable para tomar decisiones, y cuatro empieza a paralizar.
+                </p>
+            </div>
+
+            <div class="lg:col-span-7 grid sm:grid-cols-2 gap-4 reveal" style="transition-delay:.15s">
+                <article class="glass rounded-3xl p-6 hover:border-white/20 transition-colors">
+                    <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--gold)] mb-3">Lectura clave</div>
+                    <h3 class="font-display text-xl font-medium mb-2 italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">Vivir con Propósito</h3>
+                    <p class="text-sm text-white/55 mb-4">Sergio Fernández. Guía definitiva del triángulo PDH y cómo transitar del trabajo convencional a una misión de vida.</p>
+                    <span class="text-xs text-white/40">Aplicación: Vida y carrera</span>
+                </article>
+                <article class="glass rounded-3xl p-6 hover:border-white/20 transition-colors">
+                    <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--gold)] mb-3">Lectura clave</div>
+                    <h3 class="font-display text-xl font-medium mb-2 italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">Vivir sin Jefe</h3>
+                    <p class="text-sm text-white/55 mb-4">Sergio Fernández. Aplicación específica del triángulo al emprendimiento. Un negocio que dura nace en la intersección de los tres puntos.</p>
+                    <span class="text-xs text-white/40">Aplicación: Emprender</span>
+                </article>
+                <article class="glass rounded-3xl p-6 hover:border-white/20 transition-colors">
+                    <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--gold)] mb-3">Base filosófica</div>
+                    <h3 class="font-display text-xl font-medium mb-2 italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">El Elemento</h3>
+                    <p class="text-sm text-white/55 mb-4">Ken Robinson. No usa el acrónimo, pero sienta la base: la intersección entre talento natural y pasión personal.</p>
+                    <span class="text-xs text-white/40">Aplicación: Educación y talento</span>
+                </article>
+                <article class="glass rounded-3xl p-6 hover:border-white/20 transition-colors">
+                    <div class="font-mono text-[10px] uppercase tracking-widest text-[var(--gold)] mb-3">Concepto raíz</div>
+                    <h3 class="font-display text-xl font-medium mb-2 italic" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">Ikigai (生き甲斐)</h3>
+                    <p class="text-sm text-white/55 mb-4">Tradición japonesa. "La razón de ser". El modelo original de cuatro círculos del que el PDH es heredero práctico.</p>
+                    <span class="text-xs text-white/40">Aplicación: Filosofía de vida</span>
+                </article>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ============== FINAL CTA ============== -->
+<section class="relative z-10 py-24 md:py-36 px-6 md:px-10">
+    <div class="max-w-5xl mx-auto text-center reveal">
+        <span class="pill text-[var(--lime)] border-[var(--lime)]/30 bg-[var(--lime)]/5 mb-8">
+            <span class="w-1.5 h-1.5 rounded-full bg-[var(--lime)] pulse-soft"></span>
+            Tu próximo movimiento
+        </span>
+        <h2 class="font-display display-1 font-light mb-8" style="font-variation-settings:'opsz' 144, 'SOFT' 50;">
+            El triángulo<br>
+            <em class="italic grad-lime">no se dibuja solo.</em>
+        </h2>
+        <p class="text-lg md:text-xl text-white/70 max-w-2xl mx-auto mb-12">
+            Treinta minutos. Una hoja en blanco. Cinco actividades. Es lo único que hace falta para empezar a responder la pregunta que venís postergando hace años.
         </p>
-
-        <div class="flex flex-col sm:flex-row gap-6 reveal">
-            <a href="#analizador" class="px-8 py-4 rounded-full bg-[#C8F56A] text-black font-bold text-lg hover:scale-105 transition-all shadow-[0_0_40px_rgba(200,245,106,0.3)]">Descubrir mi propósito</a>
-            <a href="#metodo" class="px-8 py-4 rounded-full glass-panel text-white font-medium text-lg hover:bg-white/10 transition-all">Ver funcionamiento</a>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="#analizador" class="btn-primary text-base">
+                Hacer mi análisis ahora <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </a>
+            <a href="#guia" class="btn-ghost text-base">
+                <i data-lucide="list-checks" class="w-4 h-4"></i> Ver la guía paso a paso
+            </a>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- TRIÁNGULO DEL PROPÓSITO -->
-    <section id="metodo" class="py-24 px-6 max-w-7xl mx-auto scroll-mt-20">
-        <div class="text-center mb-16 reveal">
-            <h2 class="font-syne text-4xl md:text-5xl font-bold mb-6">El Triángulo del Propósito</h2>
-            <p class="text-white/60 max-w-2xl mx-auto">Tres ejes fundamentales que deben alinearse para encontrar el éxito y la plenitud.</p>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-8">
-            <div class="glass-panel glass-panel-hover rounded-[32px] p-8 reveal">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center glass-panel mb-8"><i data-lucide="heart" class="text-[#C5B8E8]"></i></div>
-                <h3 class="font-syne text-5xl font-bold text-white/10 mb-2">P</h3>
-                <h4 class="text-2xl font-bold mb-2">Pasión</h4>
-                <p class="text-white/60 text-sm">Tu motor emocional. Lo que harías aunque no hubiera recompensa externa.</p>
-            </div>
-            <div class="glass-panel glass-panel-hover rounded-[32px] p-8 reveal">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center glass-panel mb-8"><i data-lucide="star" class="text-[#4DCFCF]"></i></div>
-                <h3 class="font-syne text-5xl font-bold text-white/10 mb-2">D</h3>
-                <h4 class="text-2xl font-bold mb-2">Dones</h4>
-                <p class="text-white/60 text-sm">Tu esencia y potencial innato. Capacidades naturales refinadas.</p>
-            </div>
-            <div class="glass-panel glass-panel-hover rounded-[32px] p-8 reveal">
-                <div class="w-16 h-16 rounded-2xl flex items-center justify-center glass-panel mb-8"><i data-lucide="layers" class="text-[#F0A884]"></i></div>
-                <h3 class="font-syne text-5xl font-bold text-white/10 mb-2">H</h3>
-                <h4 class="text-2xl font-bold mb-2">Habilidades</h4>
-                <p class="text-white/60 text-sm">Componente práctico y técnico. Tu experiencia acumulada.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- SINERGIA -->
-    <section id="sinergia" class="py-24 px-6 max-w-7xl mx-auto scroll-mt-20">
-        <h2 class="font-syne text-3xl font-bold mb-12 reveal">La Interacción y el Desequilibrio</h2>
-        <div class="grid md:grid-cols-3 gap-6">
-            <div class="glass-panel rounded-3xl p-8 reveal">
-                <h4 class="text-xl font-bold text-[#F0A884] mb-4">Idealismo sin Impacto</h4>
-                <p class="text-sm text-white/50 mb-6">Pasión + Dones. Gozo auténtico, pero sin habilidades técnicas faltan resultados.</p>
-                <span class="text-xs border border-white/10 px-3 py-1 rounded-full">Falta: Habilidad</span>
-            </div>
-            <div class="glass-panel rounded-3xl p-8 reveal">
-                <h4 class="text-xl font-bold text-[#F0A884] mb-4">Eficiencia Vacía</h4>
-                <p class="text-sm text-white/50 mb-6">Dones + Habilidades. Éxito profesional, pero conduce al agotamiento.</p>
-                <span class="text-xs border border-white/10 px-3 py-1 rounded-full">Falta: Pasión</span>
-            </div>
-            <div class="glass-panel rounded-3xl p-8 reveal">
-                <h4 class="text-xl font-bold text-[#F0A884] mb-4">Desgaste Constante</h4>
-                <p class="text-sm text-white/50 mb-6">Pasión + Habilidades. Alto desempeño pero forzando tu naturaleza innata.</p>
-                <span class="text-xs border border-white/10 px-3 py-1 rounded-full">Falta: Dones</span>
-            </div>
-        </div>
-    </section>
-
-    <!-- ANALIZADOR INTERACTIVO -->
-    <section id="analizador" class="py-24 px-6 bg-black/20 scroll-mt-20">
-        <div class="max-w-3xl mx-auto glass-panel p-8 md:p-16 rounded-[40px] reveal text-center">
-            <h2 class="font-syne text-4xl font-bold mb-4">Analiza tu Propósito</h2>
-            <p class="text-white/60 mb-10">Escribe tus respuestas para descubrir tu verdadera dirección.</p>
-            
-            <div class="space-y-6 text-left">
-                <div>
-                    <label class="block text-sm font-medium text-white/70 mb-2">¿Qué te apasiona?</label>
-                    <textarea id="p_input" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-[#C8F56A]/50 transition-all h-24"></textarea>
+<!-- ============== FOOTER ============== -->
+<footer class="relative z-10 border-t border-white/5 py-16 px-6 md:px-10">
+    <div class="max-w-7xl mx-auto">
+        <div class="grid md:grid-cols-4 gap-8 mb-12">
+            <div class="md:col-span-2">
+                <div class="flex items-center gap-3 mb-4">
+                    <svg viewBox="0 0 36 36" class="w-8 h-8">
+                        <path d="M18 4 L33 30 L3 30 Z" fill="none" stroke="white" stroke-width="1.5" stroke-linejoin="round" class="opacity-30"/>
+                        <circle cx="18" cy="22" r="2.5" fill="var(--lime)"/>
+                    </svg>
+                    <span class="font-display text-xl font-medium tracking-tight">PDH<span class="text-[var(--lime)]">.</span></span>
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-white/70 mb-2">¿Cuáles son tus dones?</label>
-                    <textarea id="d_input" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-[#C8F56A]/50 transition-all h-24"></textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-white/70 mb-2">¿Qué habilidades tienes?</label>
-                    <textarea id="h_input" class="w-full bg-white/5 border border-white/10 rounded-2xl p-4 outline-none focus:border-[#C8F56A]/50 transition-all h-24"></textarea>
-                </div>
-                <button onclick="analizar()" class="w-full py-5 bg-[#C8F56A] text-black font-bold rounded-2xl text-xl hover:scale-[1.02] transition-all">Revelar Mi Propósito</button>
+                <p class="text-white/50 text-sm max-w-sm leading-relaxed">
+                    Una herramienta digital para aplicar el Método Holístico PDH —Pasión, Dones, Habilidades— a tu vida y tu trabajo.
+                </p>
             </div>
-            
-            <div id="resultado" class="hidden mt-10 p-8 border border-[#C8F56A]/30 bg-[#C8F56A]/10 rounded-3xl animate-pulse">
-                <h4 class="font-syne text-xl font-bold text-[#C8F56A] mb-2">Análisis Completado</h4>
-                <p id="resultado_texto" class="text-lg italic text-white/80"></p>
+            <div>
+                <div class="font-mono text-[10px] uppercase tracking-widest text-white/40 mb-4">Navegación</div>
+                <ul class="space-y-2 text-sm text-white/65">
+                    <li><a href="#metodo" class="hover:text-white transition-colors">El Método</a></li>
+                    <li><a href="#triangulo" class="hover:text-white transition-colors">Triángulo</a></li>
+                    <li><a href="#desequilibrios" class="hover:text-white transition-colors">Desequilibrios</a></li>
+                    <li><a href="#guia" class="hover:text-white transition-colors">Guía</a></li>
+                </ul>
+            </div>
+            <div>
+                <div class="font-mono text-[10px] uppercase tracking-widest text-white/40 mb-4">Acción</div>
+                <ul class="space-y-2 text-sm text-white/65">
+                    <li><a href="#analizador" class="hover:text-white transition-colors">Analizador</a></li>
+                    <li><a href="#ejemplos" class="hover:text-white transition-colors">Ejemplos reales</a></li>
+                </ul>
             </div>
         </div>
-    </section>
 
-    <footer class="py-20 text-center opacity-30 text-xs tracking-widest uppercase">
-        © 2026 Método PDH - Transformación Personal
-    </footer>
+        <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between gap-4 text-xs text-white/40">
+            <div>© 2026 · Herramienta de alineación estratégica · Inspirada en el método de Sergio Fernández.</div>
+            <div class="font-mono">v 2.0 · Diseño editorial</div>
+        </div>
+    </div>
+</footer>
 
-    <script>
-        // Inicializar Iconos
-        lucide.createIcons();
+<script>
+    // Init lucide (safe — won't crash if CDN failed)
+    const safeLucide = () => { try { window.lucide && window.lucide.createIcons(); } catch(e) {} };
+    safeLucide();
 
-        // Función del Analizador
-        function analizar() {
-            const p = document.getElementById('p_input').value;
-            const d = document.getElementById('d_input').value;
-            const resBox = document.getElementById('resultado');
-            const resText = document.getElementById('resultado_texto');
+    // ===== Cursor follower =====
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => {
+        mx = e.clientX; my = e.clientY;
+        dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%, -50%)`;
+    });
+    function loopRing() {
+        rx += (mx - rx) * 0.15;
+        ry += (my - ry) * 0.15;
+        ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%, -50%)`;
+        requestAnimationFrame(loopRing);
+    }
+    loopRing();
+    // Expand on interactives
+    document.querySelectorAll('a, button, .vertex, [data-vertex], details summary, input').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+            ring.style.width = '54px'; ring.style.height = '54px';
+            ring.style.borderColor = 'rgba(200,245,106,0.7)';
+        });
+        el.addEventListener('mouseleave', () => {
+            ring.style.width = '36px'; ring.style.height = '36px';
+            ring.style.borderColor = 'rgba(200,245,106,0.5)';
+        });
+    });
 
-            if(!p || !d) {
-                alert("Por favor completa los campos principales");
-                return;
-            }
+    // ===== Reveal on scroll =====
+    const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+    }, { threshold: 0.12, rootMargin: '0px 0px -10% 0px' });
+    document.querySelectorAll('.reveal, .stagger').forEach(el => io.observe(el));
 
-            resText.innerText = `Tu zona de genialidad surge al conectar tu pasión por "${p}" con tus talentos en "${d}". Este es el centro de tu triángulo.`;
-            resBox.classList.remove('hidden');
-            resBox.scrollIntoView({behavior: 'smooth'});
+    // ===== Nav scroll state =====
+    const nav = document.querySelector('nav');
+    const onScroll = () => { nav.classList.toggle('scrolled', window.scrollY > 30); };
+    window.addEventListener('scroll', onScroll);
+
+    // ===== Mobile menu =====
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (menuBtn) {
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+        mobileMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', () => mobileMenu.classList.add('hidden')));
+    }
+
+    // ===== Vertex interactivity =====
+    const vertexData = {
+        p: {
+            color: 'var(--lavender)',
+            label: 'P · Pasión',
+            title: 'El motor emocional',
+            body: 'Es la dirección hacia la cual tu voluntad se mueve naturalmente. Lo que hacés cuando nadie te paga ni te observa. Tu pasión es lo que te sostiene en los días difíciles, lo que te hace volver una y otra vez sin necesidad de empujarte. Sin ella, todo se vuelve obligación y el éxito pierde sabor.',
+            question: '¿qué me hace vibrar?',
+            sin: 'Sin Pasión: aparece el burnout, la sensación de "estar cumpliendo", la vida en piloto automático.'
+        },
+        d: {
+            color: 'var(--cyan)',
+            label: 'D · Dones',
+            title: 'La esencia natural',
+            body: 'Son tus facultades innatas: lo que existe en vos antes de cualquier curso o título. La intuición, la escucha, la lógica, la creatividad, la empatía. Como te resultan fáciles, tendés a no valorarlos —pero son tu firma única. Lo que para vos es respirar, para el resto es escalar el Everest.',
+            question: '¿qué se me da fácil?',
+            sin: 'Sin Dones: sentís que estás "actuando" un personaje, forzando una naturaleza que no es la tuya.'
+        },
+        h: {
+            color: 'var(--peach)',
+            label: 'H · Habilidad',
+            title: 'La maestría técnica',
+            body: 'Es el expertise pulido por el tiempo y la práctica. Si los Dones son potencial crudo, las Habilidades son la herramienta afinada. Programar, vender, diseñar, enseñar, escribir, liderar. Es lo que permite que tu propósito genere resultados tangibles —y, sí, también dinero.',
+            question: '¿en qué soy un experto?',
+            sin: 'Sin Habilidad: tenés ideas hermosas que nunca aterrizan. Idealismo sin impacto en el mundo real.'
+        }
+    };
+
+    const vertexBorderMap = {
+        p: 'rgba(197,184,232,0.45)',
+        d: 'rgba(77,207,207,0.45)',
+        h: 'rgba(240,168,132,0.45)'
+    };
+
+    function showVertex(key) {
+        const d = vertexData[key];
+        const card = document.getElementById('vertex-card');
+        const content = document.getElementById('vertex-content');
+        card.style.borderColor = vertexBorderMap[key];
+
+        content.innerHTML = `
+            <span class="pill mb-6 self-start" style="color:${d.color}; border-color:${d.color}; background:rgba(255,255,255,0.04);">
+                ${d.label}
+            </span>
+            <h3 class="font-display text-3xl md:text-4xl font-medium mb-3" style="font-variation-settings:'opsz' 144, 'SOFT' 80;">
+                ${d.title}
+            </h3>
+            <p class="text-white/45 italic font-display mb-5 text-lg" style="font-variation-settings:'opsz' 144, 'SOFT' 100;">${d.question}</p>
+            <p class="text-white/80 text-base md:text-lg leading-relaxed mb-5">${d.body}</p>
+            <div class="border-l-2 pl-4 mt-4" style="border-color:${d.color};">
+                <p class="text-sm text-white/55">${d.sin}</p>
+            </div>
+        `;
+        document.querySelectorAll('.vertex').forEach(v => v.classList.toggle('active', v.dataset.vertex === key));
+        document.querySelectorAll('.vertex-btn').forEach(v => {
+            const isActive = v.dataset.vertex === key;
+            v.style.background = isActive ? 'rgba(255,255,255,0.07)' : '';
+            v.style.transform = isActive ? 'translateY(-2px)' : '';
+        });
+    }
+    document.querySelectorAll('.vertex, .vertex-btn').forEach(v => {
+        v.addEventListener('click', () => showVertex(v.dataset.vertex));
+    });
+
+    // ===== Examples filter =====
+    document.querySelectorAll('.tabbtn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tabbtn').forEach(b => b.dataset.active = 'false');
+            btn.dataset.active = 'true';
+            const tab = btn.dataset.tab;
+            document.querySelectorAll('.example').forEach(card => {
+                const status = card.dataset.status;
+                if (tab === 'all' || tab === status) {
+                    card.style.display = '';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    // ===== Mouse-aware case cards =====
+    document.querySelectorAll('.case').forEach(card => {
+        card.addEventListener('mousemove', e => {
+            const rect = card.getBoundingClientRect();
+            card.style.setProperty('--mx', ((e.clientX - rect.left) / rect.width * 100) + '%');
+            card.style.setProperty('--my', ((e.clientY - rect.top) / rect.height * 100) + '%');
+        });
+    });
+
+    // ===== ANALYZER LIVE TRIANGLE =====
+    const sP = document.getElementById('slider-p');
+    const sD = document.getElementById('slider-d');
+    const sH = document.getElementById('slider-h');
+    const liveP = document.getElementById('live-p');
+    const liveD = document.getElementById('live-d');
+    const liveH = document.getElementById('live-h');
+    const userPath = document.getElementById('user-tri-path');
+    const scoreP = document.getElementById('score-p');
+    const scoreD = document.getElementById('score-d');
+    const scoreH = document.getElementById('score-h');
+    const balanceLabel = document.getElementById('balance-label');
+
+    // Vertex anchor positions (max=10)
+    const anchors = {
+        p: { cx: 230, cy: 60, max: 230, fixed: 'cy', fixedMin: 230 }, // top - moves vertically
+        d: { cx: 60,  cy: 350, fixedX: 230, fixedY: 250 },             // bottom-left
+        h: { cx: 400, cy: 350, fixedX: 230, fixedY: 250 }              // bottom-right
+    };
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+
+    function updateUserTriangle() {
+        const p = parseInt(sP.value);
+        const d = parseInt(sD.value);
+        const h = parseInt(sH.value);
+
+        // Center
+        const cx = 230, cy = 250;
+
+        // Compute interpolated positions: from center toward anchor based on value/10
+        const px = cx;
+        const py = lerp(cy, 60, p / 10);
+
+        const dxx = lerp(cx, 60, d / 10);
+        const dyy = lerp(cy, 350, d / 10);
+
+        const hxx = lerp(cx, 400, h / 10);
+        const hyy = lerp(cy, 350, h / 10);
+
+        liveP.setAttribute('cx', px);
+        liveP.setAttribute('cy', py);
+        liveD.setAttribute('cx', dxx);
+        liveD.setAttribute('cy', dyy);
+        liveH.setAttribute('cx', hxx);
+        liveH.setAttribute('cy', hyy);
+
+        userPath.setAttribute('d', `M${px} ${py} L${hxx} ${hyy} L${dxx} ${dyy} Z`);
+
+        scoreP.textContent = p;
+        scoreD.textContent = d;
+        scoreH.textContent = h;
+
+        // Balance label
+        const avg = (p + d + h) / 3;
+        const variance = Math.max(p,d,h) - Math.min(p,d,h);
+        let label = '';
+        if (avg < 3) label = 'sin contacto con el centro';
+        else if (variance >= 6) label = 'triángulo deformado';
+        else if (variance >= 4) label = 'pata débil visible';
+        else if (avg >= 8) label = 'cerca del propósito';
+        else if (avg >= 6) label = 'buen camino, ajustes pendientes';
+        else label = 'territorio promedio';
+        balanceLabel.textContent = label;
+    }
+
+    [sP, sD, sH].forEach(s => s.addEventListener('input', updateUserTriangle));
+    updateUserTriangle();
+
+    // ===== Reveal diagnosis =====
+    document.getElementById('reveal-btn').addEventListener('click', () => {
+        const p = parseInt(sP.value);
+        const d = parseInt(sD.value);
+        const h = parseInt(sH.value);
+        const activity = document.getElementById('activity-input').value.trim() || 'esta actividad';
+
+        const box = document.getElementById('result-box');
+        const status = document.getElementById('result-status');
+        const weakest = document.getElementById('result-weakest');
+        const balance = document.getElementById('result-balance');
+        const text = document.getElementById('result-text');
+        const action = document.getElementById('result-action');
+
+        // Compute weakest pillar
+        const pillars = [
+            { name: 'Pasión', key: 'p', val: p, color: 'var(--lavender)' },
+            { name: 'Dones', key: 'd', val: d, color: 'var(--cyan)' },
+            { name: 'Habilidad', key: 'h', val: h, color: 'var(--peach)' }
+        ];
+        pillars.sort((a,b) => a.val - b.val);
+        const weak = pillars[0];
+        const avg = (p + d + h) / 3;
+        const variance = Math.max(p,d,h) - Math.min(p,d,h);
+        const balancePct = Math.round((avg / 10) * 100 - variance * 3);
+
+        // Status
+        let st = '', txt = '', act = '';
+        if (avg >= 8 && variance <= 2) {
+            st = 'Zona de propósito';
+            txt = `"${activity}" toca los tres vértices del triángulo con fuerza pareja. Cuando este punto aparece, no se discute: se acciona. Tu trabajo ahora no es buscar más, es profundizar.`;
+            act = 'Comprometete públicamente con esta dirección. Anunciá un proyecto concreto en los próximos 30 días que combine los tres pilares.';
+        } else if (avg >= 6 && variance <= 3) {
+            st = 'Camino válido con ajustes';
+            txt = `"${activity}" tiene los tres pilares activos pero ${weak.name} está rezagada (${weak.val}/10). Es una excelente apuesta —solo necesita un trimestre de fortalecimiento focalizado en esa pata.`;
+            act = `Diseñá un plan de 90 días enfocado exclusivamente en subir ${weak.name}. Cursos, mentorías o práctica deliberada según corresponda.`;
+        } else if (variance >= 5) {
+            st = 'Triángulo desequilibrado';
+            const strong = pillars[2];
+            const arquetipo = (weak.key === 'h') ? 'Soñador idealista' : (weak.key === 'p') ? 'Profesional vacío' : 'Esforzado constante';
+            txt = `"${activity}" muestra el patrón clásico del ${arquetipo}. Tu ${strong.name} brilla (${strong.val}/10) pero ${weak.name} apenas existe (${weak.val}/10). Esta brecha es lo que está rompiendo el triángulo.`;
+            act = `Antes de avanzar con esta actividad, dedicale 60 días a evaluar honestamente si ${weak.name} se puede fortalecer o si conviene buscar otra opción.`;
+        } else if (avg < 4) {
+            st = 'Lejos del centro';
+            txt = `"${activity}" no toca con fuerza ningún vértice del triángulo. Es probable que sea una opción reactiva —elegida por presión externa más que por alineación interna. Esta no es tu zona.`;
+            act = 'Volvé al paso 1 de la guía. Hacé una nueva lista de cinco actividades, esta vez sin filtro económico ni social. La respuesta correcta no estará en esta lista.';
+        } else {
+            st = 'Territorio promedio';
+            txt = `"${activity}" es funcional pero no excepcional. Los tres vértices están en zona media (${p}/${d}/${h}). Es la trampa más común: actividades suficientemente buenas que nunca llegan a ser tu propósito real.`;
+            act = `Definí en una frase qué cambiarías de "${activity}" para que ${weak.name} suba a 8/10. Si la respuesta no aparece rápido, esta no es tu actividad.`;
         }
 
-        // Animaciones al hacer Scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) entry.target.classList.add('active');
-            });
-        }, { threshold: 0.1 });
+        status.textContent = st;
+        weakest.innerHTML = `<span style="color:${weak.color}">${weak.name}</span> · ${weak.val}/10`;
+        balance.textContent = Math.max(0, Math.min(100, balancePct)) + '%';
+        text.textContent = `"${txt}"`;
+        action.textContent = act;
 
-        document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
-    </script>
+        box.classList.remove('hidden');
+        setTimeout(() => box.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 100);
+        safeLucide();
+    });
+
+    // ===== Smooth scroll bounded for anchor links =====
+    document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+            const id = a.getAttribute('href');
+            if (id.length > 1) {
+                const target = document.querySelector(id);
+                if (target) {
+                    e.preventDefault();
+                    window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
+                }
+            }
+        });
+    });
+
+    // ===== Default: load P vertex content on initial display =====
+    // (Don't auto-show — let user discover. Keep the initial prompt.)
+</script>
+
 </body>
 </html>
