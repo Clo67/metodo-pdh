@@ -3,278 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Método PDH - Interactivos</title>
+    <title>Método PDH - Completo</title>
     
-    <!-- Motores y Estilos -->
+    <!-- Librerías Core -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <script src="https://unpkg.com/lucide-react@latest/dist/umd/lucide-react.js"></script>
+    
+    <!-- Iconos Lucide (Versión súper compatible) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <style>
-        /* Importamos las fuentes directamente en el CSS */
         @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+        :root {
+            --font-syne: 'Syne', sans-serif;
+            --font-dmsans: 'DM Sans', sans-serif;
+            --color-navy: #0A1628;
+            --color-lime: #C8F56A;
+        }
+        body { font-family: var(--font-dmsans); background-color: var(--color-navy); color: white; margin: 0; overflow-x: hidden; }
+        .font-syne { font-family: var(--font-syne); }
+        .mesh-bg {
+            background-image: 
+                radial-gradient(circle at 15% 20%, rgba(77, 207, 207, 0.1) 0%, transparent 35%),
+                radial-gradient(circle at 85% 40%, rgba(197, 184, 232, 0.1) 0%, transparent 35%);
+        }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        .reveal { opacity: 0; transform: translateY(20px); transition: all 0.6s ease-out; }
+        .reveal.active { opacity: 1; transform: translateY(0); }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        // Extraemos hooks y componentes de las librerías globales
-        const { useEffect, useState, useRef } = React;
-        const { 
-          Heart, Sparkles, Target, Layers, ArrowRight, CheckCircle2, 
-          Zap, Compass, TrendingUp, RefreshCcw, Star, Loader2 
-        } = LucideReact;
+        const { useState, useEffect } = React;
 
-        // --- ESTILOS GLOBALES ---
-        const globalStyles = `
-          :root {
-            --font-syne: 'Syne', sans-serif;
-            --font-dmsans: 'DM Sans', sans-serif;
-            --color-navy: #0A1628;
-            --color-navy-light: #162034;
-            --color-lime: #C8F56A;
-            --color-cyan: #4DCFCF;
-            --color-lavender: #C5B8E8;
-            --color-peach: #F0A884;
-          }
-          html { scroll-behavior: smooth; }
-          body {
-            font-family: var(--font-dmsans);
-            background-color: var(--color-navy);
-            color: white;
-            overflow-x: hidden;
-          }
-          .font-syne { font-family: var(--font-syne); }
-          .mesh-bg {
-            background-color: var(--color-navy);
-            background-image: 
-              radial-gradient(circle at 15% 20%, rgba(77, 207, 207, 0.12) 0%, transparent 35%),
-              radial-gradient(circle at 85% 40%, rgba(197, 184, 232, 0.12) 0%, transparent 35%),
-              radial-gradient(circle at 50% 90%, rgba(200, 245, 106, 0.08) 0%, transparent 40%);
-            background-attachment: fixed;
-          }
-          .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
-          }
-          .glass-panel-hover:hover {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px 0 rgba(0, 0, 0, 0.3);
-            transition: all 0.3s ease;
-          }
-          .reveal-target {
-            opacity: 0;
-            transform: translateY(40px);
-            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-          }
-          .reveal-target.active {
-            opacity: 1;
-            transform: translateY(0);
-          }
-          @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-15px); }
-          }
-          .animate-float { animation: float 6s ease-in-out infinite; }
-          .animate-fade-in { animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-          @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        `;
-
-        // --- COMPONENTES UI ---
-        const Badge = ({ children, colorClass = "text-[#C8F56A] bg-[#C8F56A]/10 border-[#C8F56A]/20" }) => (
-          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border ${colorClass} transition-all`}>
-            {children}
-          </span>
-        );
-
-        const SectionHeading = ({ title, subtitle, align = "center" }) => (
-          <div className={`mb-16 ${align === "center" ? "text-center" : "text-left"} reveal-target`}>
-            <h2 className="font-syne text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">{title}</h2>
-            {subtitle && <p className="text-xl text-white/70 max-w-2xl mx-auto font-light leading-relaxed">{subtitle}</p>}
-          </div>
-        );
-
-        // --- SECCIONES ---
-        const HeroSection = () => {
-          const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-          return (
-            <section className="relative min-h-screen flex items-center justify-center pt-20 pb-12 overflow-hidden px-6">
-              <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-[#4DCFCF]/10 rounded-full blur-[100px] animate-float"></div>
-              <div className="relative z-10 max-w-5xl mx-auto text-center reveal-target">
-                <Badge>Experiencia de Transformación</Badge>
-                <h1 className="font-syne text-6xl md:text-8xl font-bold text-white mt-8 mb-8 leading-[1.1] tracking-tight">
-                  Encuentra tu <br className="hidden md:block"/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C8F56A] to-[#4DCFCF]">Punto de Equilibrio</span>
-                </h1>
-                <p className="text-xl md:text-2xl text-white/70 max-w-3xl mx-auto mb-12 font-light">El Método PDH no es una idea abstracta; es el lugar exacto donde convergen tu identidad profunda, tu talento innato y tu capacidad de acción.</p>
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <button onClick={() => scrollTo('analizador')} className="px-8 py-4 rounded-[24px] bg-[#C8F56A] text-[#0A1628] font-bold text-lg hover:scale-105 transition-all shadow-[0_0_40px_rgba(200,245,106,0.3)] flex items-center gap-3 w-full sm:w-auto justify-center">Descubrir mi propósito <ArrowRight size={20} /></button>
-                  <button onClick={() => scrollTo('metodo')} className="px-8 py-4 rounded-[24px] glass-panel text-white font-medium text-lg hover:bg-white/10 transition-all flex items-center gap-3 w-full sm:w-auto justify-center">Ver funcionamiento</button>
-                </div>
-              </div>
-            </section>
-          );
+        // Componente de Icono a prueba de errores
+        const LucideIcon = ({ name, color = "currentColor" }) => {
+            useEffect(() => { window.lucide && window.lucide.createIcons(); }, []);
+            return <i data-lucide={name} className="w-6 h-6" style={{color: color}}></i>;
         };
 
-        const TriangleSection = () => {
-          const pillars = [
-            { id: "P", title: "Pasión", icon: <Heart size={32} className="text-[#C5B8E8]" />, desc: "El motor emocional y la dirección natural de tu voluntad. Tus sueños e intereses profundos." },
-            { id: "D", title: "Dones", icon: <Star size={32} className="text-[#4DCFCF]" />, desc: "Tu esencia y potencial innato. Capacidades naturales refinadas mediante el desarrollo personal." },
-            { id: "H", title: "Habilidades", icon: <Layers size={32} className="text-[#F0A884]" />, desc: "Componente práctico y técnico. El expertise adquirido y la experiencia acumulada." }
-          ];
-          return (
-            <section id="metodo" className="py-24 px-6 relative scroll-mt-20">
-              <div className="max-w-7xl mx-auto">
-                <SectionHeading title="El Triángulo del Propósito" subtitle="Tres ejes fundamentales que deben alinearse para encontrar el éxito y la plenitud." />
-                <div className="grid md:grid-cols-3 gap-8 mt-16">
-                  {pillars.map((pillar) => (
-                    <div key={pillar.id} className="glass-panel glass-panel-hover rounded-[32px] p-8 reveal-target flex flex-col items-start">
-                      <div className="w-16 h-16 rounded-[20px] flex items-center justify-center glass-panel border border-white/10 mb-8">{pillar.icon}</div>
-                      <h3 className="font-syne text-5xl font-bold text-white/20 mb-2">{pillar.id}</h3>
-                      <h4 className="text-2xl font-bold text-white mb-4">{pillar.title}</h4>
-                      <p className="text-white/70 leading-relaxed">{pillar.desc}</p>
-                    </div>
-                  ))}
+        const App = () => {
+            const [step, setStep] = useState(0);
+            const [inputs, setInputs] = useState({p:'', d:'', h:''});
+            const [res, setRes] = useState(null);
+
+            useEffect(() => {
+                const observer = new IntersectionObserver(entries => {
+                    entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('active'); });
+                }, {threshold: 0.1});
+                document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+            }, []);
+
+            const stepsData = [
+                { t: "01. Explora", d: "Escribe 5 actividades a las que te dedicarías el resto de tu vida." },
+                { t: "02. Dibuja", d: "Analiza cada idea: ¿Pasión? ¿Dones? ¿Habilidades?" },
+                { t: "03. Equilibra", d: "Busca donde los tres pilares sean igual de fuertes." },
+                { t: "04. Decide", d: "Elige la que más sentido tenga para tu vida actual." },
+                { t: "05. Itera", d: "Prueba en la vida real durante 3 meses y ajusta." }
+            ];
+
+            return (
+                <div className="mesh-bg min-h-screen">
+                    <nav className="fixed w-full z-50 glass py-4 px-6 flex justify-between items-center">
+                        <div className="text-[#C8F56A] font-syne font-bold text-2xl">PDH.</div>
+                        <div className="hidden md:flex gap-6 text-sm opacity-70">
+                            <a href="#metodo">Método</a>
+                            <a href="#analizador">Analizador</a>
+                            <a href="#guia">Guía</a>
+                        </div>
+                    </nav>
+
+                    {/* HERO */}
+                    <section className="pt-32 pb-20 px-6 text-center reveal">
+                        <span className="border border-[#C8F56A]/30 text-[#C8F56A] px-4 py-1 rounded-full text-xs mb-6 inline-block">MÉTODO ACTUALIZADO</span>
+                        <h1 className="font-syne text-5xl md:text-7xl font-bold mt-6 mb-6">Encuentra tu <br/><span className="text-[#C8F56A]">Punto de Equilibrio</span></h1>
+                        <p className="text-white/60 max-w-xl mx-auto text-lg">Donde convergen tu identidad profunda, tu talento y tu capacidad de acción.</p>
+                        <button onClick={() => document.getElementById('analizador').scrollIntoView({behavior:'smooth'})} className="mt-10 bg-[#C8F56A] text-black px-8 py-4 rounded-full font-bold hover:scale-105 transition-transform">Comenzar Evaluación</button>
+                    </section>
+
+                    {/* TRIANGULO */}
+                    <section id="metodo" className="py-20 px-6 max-w-6xl mx-auto">
+                        <h2 className="font-syne text-3xl text-center mb-12">El Triángulo del Propósito</h2>
+                        <div className="grid md:grid-cols-3 gap-6">
+                            <div className="glass p-8 rounded-3xl reveal">
+                                <LucideIcon name="heart" color="#C5B8E8" />
+                                <h3 className="text-xl font-bold mt-4">Pasión</h3>
+                                <p className="text-white/50 mt-2 text-sm">Tu motor emocional. Lo que harías gratis por puro entusiasmo.</p>
+                            </div>
+                            <div className="glass p-8 rounded-3xl reveal">
+                                <LucideIcon name="star" color="#4DCFCF" />
+                                <h3 className="text-xl font-bold mt-4">Dones</h3>
+                                <p className="text-white/50 mt-2 text-sm">Tu esencia y potencial innato. Tus talentos naturales.</p>
+                            </div>
+                            <div className="glass p-8 rounded-3xl reveal">
+                                <LucideIcon name="layers" color="#F0A884" />
+                                <h3 className="text-xl font-bold mt-4">Habilidades</h3>
+                                <p className="text-white/50 mt-2 text-sm">Tu experiencia técnica y práctica adquirida con los años.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* ANALIZADOR */}
+                    <section id="analizador" className="py-20 px-6 bg-black/20">
+                        <div className="max-w-2xl mx-auto glass p-8 md:p-12 rounded-[40px] reveal">
+                            <h2 className="font-syne text-2xl font-bold mb-8 text-center text-[#C8F56A]">Analiza tu Propósito</h2>
+                            <div className="space-y-4">
+                                <textarea placeholder="¿Qué te apasiona?" className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#C8F56A] h-20 transition-all" onChange={e=>setInputs({...inputs, p:e.target.value})} />
+                                <textarea placeholder="¿Cuáles son tus dones?" className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#C8F56A] h-20 transition-all" onChange={e=>setInputs({...inputs, d:e.target.value})} />
+                                <textarea placeholder="¿Qué habilidades tienes?" className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl outline-none focus:border-[#C8F56A] h-20 transition-all" onChange={e=>setInputs({...inputs, h:e.target.value})} />
+                                <button onClick={()=>{setRes(`Tu zona de genialidad está en conectar tu pasión por "${inputs.p}" con tus dones en "${inputs.d}".`)}} className="w-full bg-[#C8F56A] text-black font-bold py-4 rounded-2xl">Revelar Mi Centro</button>
+                                {res && <div className="mt-6 p-6 border border-[#C8F56A]/30 bg-[#C8F56A]/10 rounded-2xl text-center text-sm italic animate-pulse">{res}</div>}
+                            </div>
+                        </div>
+                    </section>
+
+                    {/* GUIA */}
+                    <section id="guia" className="py-20 px-6 max-w-5xl mx-auto">
+                        <h2 className="font-syne text-3xl text-center mb-12">Guía Paso a Paso</h2>
+                        <div className="flex flex-col md:flex-row gap-8">
+                            <div className="md:w-1/3 flex flex-col gap-2">
+                                {stepsData.map((s,i)=>(
+                                    <button key={i} onClick={()=>setStep(i)} className={`p-4 rounded-xl text-left border ${step===i?'bg-white/10 border-[#C8F56A]':'border-transparent opacity-40'}`}>{s.t}</button>
+                                ))}
+                            </div>
+                            <div className="md:w-2/3 glass p-10 rounded-3xl flex flex-col justify-center min-h-[200px]">
+                                <h3 className="text-2xl font-bold mb-4">{stepsData[step].t}</h3>
+                                <p className="text-white/60 text-lg">{stepsData[step].d}</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <footer className="py-12 text-center opacity-30 text-xs">© 2026 MÉTODO PDH - INTERACTIVO</footer>
                 </div>
-              </div>
-            </section>
-          );
+            );
         };
-
-        const SynergySection = () => {
-          const combinations = [
-            { title: "Pasión + Dones", result: "Idealismo sin Impacto", missing: "Falta: Habilidad" },
-            { title: "Dones + Habilidades", result: "Eficiencia Vacía", missing: "Falta: Pasión" },
-            { title: "Pasión + Habilidades", result: "Desgaste Constante", missing: "Falta: Dones" }
-          ];
-          return (
-            <section id="sinergia" className="py-24 px-6 scroll-mt-20">
-              <div className="max-w-7xl mx-auto">
-                <SectionHeading title="La Interacción y el Desequilibrio" align="left" />
-                <div className="grid md:grid-cols-3 gap-6">
-                  {combinations.map((combo, idx) => (
-                    <div key={idx} className="glass-panel rounded-[24px] p-8 reveal-target group relative overflow-hidden">
-                      <div className="relative z-10">
-                        <div className="flex items-center gap-3 mb-4"><Compass size={20} className="text-[#4DCFCF]" /><span className="font-syne font-semibold text-white/80">{combo.title}</span></div>
-                        <h4 className="text-2xl font-bold text-[#F0A884] mb-6">{combo.result}</h4>
-                        <div className="inline-flex px-4 py-2 rounded-full glass-panel border-white/10 text-white/50 text-sm font-medium">{combo.missing}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-          );
-        };
-
-        const InteractiveToolSection = () => {
-          const [inputs, setInputs] = useState({ p: '', d: '', h: '' });
-          const [result, setResult] = useState(null);
-          const [isAnalyzing, setIsAnalyzing] = useState(false);
-          const isFormComplete = inputs.p.trim() !== '' && inputs.d.trim() !== '' && inputs.h.trim() !== '';
-
-          const handleAnalyze = () => {
-            if (!isFormComplete) return;
-            setIsAnalyzing(true);
-            setResult(null);
-            setTimeout(() => {
-              setIsAnalyzing(false);
-              setResult({
-                title: "Tu Zona de Genialidad Identificada",
-                text: `Tu propósito óptimo se encuentra al fusionar tu pasión por "${inputs.p}" con tus talentos en "${inputs.d}". Usando tus habilidades en "${inputs.h}", lograrás un impacto real y alineado.`
-              });
-            }, 1800);
-          };
-
-          return (
-            <section id="analizador" className="py-24 px-6 bg-[#0A1628]/80 scroll-mt-20">
-              <div className="max-w-4xl mx-auto">
-                <SectionHeading title="Analiza tu Propósito" />
-                <div className="glass-panel rounded-[32px] p-8 md:p-12 reveal-target relative">
-                  <div className="space-y-6 mb-10">
-                    <textarea value={inputs.p} onChange={e => setInputs({...inputs, p: e.target.value})} placeholder="¿Qué te apasiona?" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#C8F56A]/50 outline-none h-24 transition-all" />
-                    <textarea value={inputs.d} onChange={e => setInputs({...inputs, d: e.target.value})} placeholder="¿Cuáles son tus dones?" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#C8F56A]/50 outline-none h-24 transition-all" />
-                    <textarea value={inputs.h} onChange={e => setInputs({...inputs, h: e.target.value})} placeholder="¿Qué habilidades tienes?" className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:border-[#C8F56A]/50 outline-none h-24 transition-all" />
-                  </div>
-                  <button onClick={handleAnalyze} disabled={!isFormComplete || isAnalyzing} className={`w-full py-5 rounded-2xl font-bold text-lg flex justify-center items-center gap-3 transition-all ${isFormComplete ? 'bg-[#C8F56A] text-[#0A1628] hover:scale-[1.02]' : 'bg-white/10 text-white/30'}`}>
-                    {isAnalyzing ? <><Loader2 className="animate-spin" size={20}/> Analizando...</> : <><Sparkles size={20}/> Revelar mi Propósito</>}
-                  </button>
-                  {result && <div className="mt-8 p-8 rounded-2xl bg-[#C8F56A]/10 border border-[#C8F56A]/30 animate-fade-in"><h4 className="text-xl font-bold mb-2">{result.title}</h4><p className="text-white/70 italic">{result.text}</p></div>}
-                </div>
-              </div>
-            </section>
-          );
-        };
-
-        const StepByStepSection = () => {
-          const [activeStep, setActiveStep] = useState(0);
-          const steps = [
-            { num: "01", title: "Explora", desc: "Escribe 5 actividades a las que te dedicarías el resto de tu vida.", icon: <Sparkles /> },
-            { num: "02", title: "Dibuja", desc: "Analiza cada idea: ¿Pasión? ¿Dones? ¿Habilidades?", icon: <Layers /> },
-            { num: "03", title: "Equilibra", desc: "Busca la actividad donde los tres pilares sean fuertes.", icon: <CheckCircle2 /> },
-            { num: "04", title: "Decide", desc: "Elige la que más sentido tenga para tu vida actual.", icon: <Target /> },
-            { num: "05", title: "Itera", desc: "Prueba tu elección en la vida real y ajusta el camino.", icon: <RefreshCcw /> }
-          ];
-          return (
-            <section id="guia" className="py-24 px-6 scroll-mt-20">
-              <div className="max-w-7xl mx-auto">
-                <SectionHeading title="El Método en Acción" />
-                <div className="flex flex-col lg:flex-row gap-10">
-                  <div className="lg:w-1/3 flex flex-col gap-3">
-                    {steps.map((s, i) => (
-                      <button key={i} onClick={() => setActiveStep(i)} className={`p-6 rounded-2xl border text-left transition-all ${activeStep === i ? 'bg-white/10 border-[#C8F56A]' : 'border-transparent opacity-50'}`}>
-                        {s.num}. {s.title}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="lg:w-2/3 glass-panel p-10 rounded-[32px] min-h-[300px] flex flex-col justify-center">
-                    <h3 className="text-3xl font-bold mb-4">{steps[activeStep].title}</h3>
-                    <p className="text-xl text-white/70">{steps[activeStep].desc}</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-          );
-        };
-
-        function App() {
-          useEffect(() => {
-            const observer = new IntersectionObserver(entries => {
-              entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
-            }, { threshold: 0.1 });
-            document.querySelectorAll('.reveal-target').forEach(el => observer.observe(el));
-          }, []);
-
-          return (
-            <div className="mesh-bg min-h-screen">
-              <style>{globalStyles}</style>
-              <nav className="fixed top-0 w-full z-50 glass-panel px-6 py-4 border-x-0 border-t-0">
-                <div className="max-w-7xl mx-auto flex justify-between items-center">
-                  <div className="font-syne font-bold text-2xl text-[#C8F56A]">PDH.</div>
-                  <div className="hidden md:flex gap-8 text-sm">
-                    <a href="#metodo" className="hover:text-[#C8F56A]">El Método</a>
-                    <a href="#analizador" className="hover:text-[#C8F56A]">Analizador</a>
-                    <a href="#guia" className="hover:text-[#C8F56A]">Guía</a>
-                  </div>
-                </div>
-              </nav>
-              <HeroSection />
-              <TriangleSection />
-              <SynergySection />
-              <InteractiveToolSection />
-              <StepByStepSection />
-              <footer className="py-20 text-center opacity-40 text-xs italic">© 2026 Método PDH Interactivos</footer>
-            </div>
-          );
-        }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
         root.render(<App />);
